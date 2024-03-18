@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
 app.use(cors({
-    origin:["https://stellar-gsfc.onrender.com","http://localhost:3000"],
+    origin:["https://ztellar-5r2r.onrender.com"],
     credentials:true
 }));
 
