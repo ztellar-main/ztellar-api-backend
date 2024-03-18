@@ -48,7 +48,7 @@ export const createCheckout = async(req,res,next) => {
             line_items: [
               {currency: 'PHP', amount:price, description: `10th PSME LRC Conference 2024`, name: `10th PSME LRC 2024 registration - ${req.body.regType}`, quantity: 1}
             ],
-            payment_method_types: ["gcash"],
+            payment_method_types: ["billease","card","dob","dob_ubp","gcash","paymaya"],
             success_url: process.env.MONGOPAY_SUCCESS_URL
           }
         }
