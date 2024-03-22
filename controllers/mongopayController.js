@@ -60,41 +60,72 @@ export const createMongopayPayment = asyncHandler(async(req,res,next) => {
                 
                 
                 // UPDATE USER PRODUCT OWNED - COURSE
-                const userUpdate = await User.findByIdAndUpdate(
-                    {_id:userId},
-                    {$push: {course_owned: {_id: courseId_mongoose}}},
-                    {new:true,upsert:true}
-                )
-                // 
-                try{
-                    const eventUpdateUser = await User.findByIdAndUpdate(
+                let userUpdate = undefined
+                if(req.body.productId === '65fd60b6881c189c54553606'){
+                    userUpdate = await User.findByIdAndUpdate(
                         {_id:userId},
-                        {
-                          $push: {course_owned: {_id: eventId_mongoose,qr_code:`${userId}${time}`,reg_type: req.body.regType}},
-                        },
+                        {$push: {course_owned: {_id: courseId_mongoose}}},
                         {new:true,upsert:true}
                     )
-                    try{
-                        const courseUpdate = await Course.findByIdAndUpdate(
-                            {_id: req.body.productId},
+                }else{
+                    userUpdate = await User.findByIdAndUpdate(
+                        {_id:userId},
+                        {$push: {course_owned: {_id: courseId_mongoose,qr_code:`${userId}${time}`,reg_type: req.body.regType}}},
+                        {new:true,upsert:true}
+                    )
+                }
+
+                // 
+                try{
+                    let eventUpdateUser = undefined;
+                    if(req.body.productId === '65fd60b6881c189c54553606'){
+                        eventUpdateUser = await User.findByIdAndUpdate(
+                            {_id:userId},
                             {
-                              $push: {registered: {_id: userId_mongoose}}},
+                              $push: {course_owned: {_id: eventId_mongoose,qr_code:`${userId}${time}`,reg_type: req.body.regType}},
+                            },
                             {new:true,upsert:true}
-                          )
-                          try{
-                            const eventUpdate = await Course.findByIdAndUpdate(
-                                {_id: process.env.EVENT_ID},
-                                {$push: {registered: {_id:userId_mongoose,qr_code:`${userId}${time}`,reg_type: req.body.regType}}},
+                        )
+                        
+                    }
+                    try{
+                        let courseUpdate = undefined
+                        if(req.body.productId === '65fd60b6881c189c54553606'){
+                            courseUpdate = await Course.findByIdAndUpdate(
+                                {_id: req.body.productId},
+                                {
+                                  $push: {registered: {_id: userId_mongoose}}},
                                 {new:true,upsert:true}
                               )
+                        }else{
+                            courseUpdate = await Course.findByIdAndUpdate(
+                                {_id: req.body.productId},
+                                {
+                                  $push: {registered: {_id: userId_mongoose,qr_code:`${userId}${time}`,reg_type: req.body.regType}}},
+                                {new:true,upsert:true}
+                              )
+                        }
+                        
+
+                          try{
+                            let eventUpdate = undefined;
+                            if(req.body.productId === '65fd60b6881c189c54553606'){
+                                eventUpdate = await Course.findByIdAndUpdate(
+                                    {_id: process.env.EVENT_ID},
+                                    {$push: {registered: {_id:userId_mongoose,qr_code:`${userId}${time}`,reg_type: req.body.regType}}},
+                                    {new:true,upsert:true}
+                                  )
+                            }
+
+
         
                               res.status(200).json({
-                                data1: savePaymongo,
-                                data2: savePayment,
-                                data3: userUpdate,
-                                data4: eventUpdateUser,
-                                data5: courseUpdate,
-                                data6: eventUpdate,
+                                data1: savePaymongo || undefined,
+                                data2: savePayment || undefined,
+                                data3: userUpdate || undefined,
+                                data4: eventUpdateUser || undefined,
+                                data5: courseUpdate || undefined,
+                                data6: eventUpdate || undefined,
                                 message: 'success'
                             })
                           }catch(err){
