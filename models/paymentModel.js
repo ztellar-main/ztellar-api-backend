@@ -32,7 +32,8 @@ const paymentSchema = new mongoose.Schema({
     order_id:String,
     payer_id:String,
     payment_id:String,
-    facilitator_access_token:String
+    facilitator_access_token:String,
+    reg_type:String
 },{
     timestamps:true
 });
