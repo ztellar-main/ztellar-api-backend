@@ -46,6 +46,7 @@ export const createMongopayPayment = asyncHandler(async(req,res,next) => {
                 owner_payment: req.body.ownerPayment,
                 fee: req.body.fee,
                 payment_id: req.body.payment_intent_id,
+                reg_type:req.body.regType
             })
             // res.status(200).json({
             //     data1: savePaymongo,
