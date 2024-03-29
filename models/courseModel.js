@@ -83,7 +83,9 @@ const courseSchema = new mongoose.Schema({
     place:String,
     f2f_price:Number,
     virtual_price:Number,
-    JPSME_price:Number
+    JPSME_price:Number,
+    new_reg_f2f:Number,
+    new_reg_virtual:Number
 
 }, { timestamps: true })
 
