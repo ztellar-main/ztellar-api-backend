@@ -8,7 +8,7 @@ const mongopaySchema = new mongoose.Schema({
     base_payment:Number,
     statement_descriptor:String,
     payment_method:String
-})
+},{ timestamps: true })
 
 const Mongopay = mongoose.model('Mongopay',mongopaySchema)
 
