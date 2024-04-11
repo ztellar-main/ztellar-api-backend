@@ -78,7 +78,7 @@ const userSchema = new mongoose.Schema({
             reg_type:String
         }
     ],
-});
+},{ timestamps: true });
 
 // HASH PASSWORD
 userSchema.pre('save', async function(next) {
