@@ -3,31 +3,27 @@ import protect from '../utils/protect.js'
 
 // CREATE CHECKOUT SESSION
 export const createCheckout = async(req,res,next) => {
-    // const token = req.body.token
+    const token = req.body.token
 
 
-    // const user = await protect(token)
+    const user = await protect(token)
 
-    // if(user === 'Not authorized, no token'){
-    //   res.status(401).json(user)
-    //   return
-    // }
+    if(user === 'Not authorized, no token'){
+      res.status(401).json(user)
+      return
+    }
       
-    // if(user === 'Not authorized, invalid token'){
-    //   res.status(401).json(user)
-    //   return
-    // }
-
-    
-    // console.log(token)
-    // console.log({key: `Basic ${process.env.PAYMONGO_KEY}`})
+    if(user === 'Not authorized, invalid token'){
+      res.status(401).json(user)
+      return
+    }
 
 
 
     const price = Number(`${req.body.price}00`)
     const productId = req.body.courseId
     // PRODUCT ID / OWNER_ID /
-    const description = `${productId}/${req.body.ownerId}/${req.body.type}/${req.body.regType}`;
+    const description = `${productId}/${req.body.ownerId}/${req.body.type}/${req.body.regType}/${user._id}`;
 
     const options = {
       method: 'POST',
