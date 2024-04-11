@@ -21,7 +21,7 @@ const videoSchema = new mongoose.Schema({
         type:Number,
         required:true
     }
-})
+},{ timestamps: true })
 
 const Video = mongoose.model('Video',videoSchema);
 
