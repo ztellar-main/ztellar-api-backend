@@ -39,7 +39,7 @@ export const createCheckout = async(req,res,next) => {
             send_email_receipt: true,
             show_description: true,
             show_line_items: true,
-            cancel_url: 'https://ztellar-7rf8.onrender.com',
+            cancel_url: 'https://ztellar.tech',
             description: description,
             line_items: [
               {currency: 'PHP', amount:price, description: `10th PSME LRC Conference 2024`, name: `10th PSME LRC 2024 registration - ${req.body.regType}`, quantity: 1}
