@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler';
 import cloudinary from '../utils/cloudinary.js'
 import fs from 'node:fs'
 import protect from '../utils/protect.js';
+import { v4 as uuidv4 } from 'uuid';
 
 
 // UPLOAD COURSE IMAGE
@@ -141,7 +142,7 @@ export const UploadSubjectVideo = asyncHandler(async(req,res,next) => {
     const subjectTitle = req.query.subjectTitle;
     const title = req.query.title;
     const fileTitle = `video_file_${title}`
-    const publicId = `${id}/${courseTitle}/${subjectTitle}/${fileTitle}`
+    const publicId = `${id}/${uuidv4()}`
     cloudinary.uploader.upload_large(`${req.file.path}`,
     { 
     public_id: publicId,
@@ -157,8 +158,6 @@ export const UploadSubjectVideo = asyncHandler(async(req,res,next) => {
         fs.unlinkSync(`${req.file.path}`)
         console.log('deleted')
     });
-
-
 });
 
 // DELETE COURSE VIDEO

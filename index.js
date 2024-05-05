@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.use(cookieParser());
 app.use(cors({
-    origin:["https://ztellar-7rf8.onrender.com","https://ztellar.tech"],
+    origin:["https://ztellar-7rf8.onrender.com","https://ztellar.tech","http://localhost:3000"],
     credentials:true
 }));
 

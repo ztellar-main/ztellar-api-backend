@@ -2,6 +2,7 @@ import express from 'express'
 import multer from 'multer'
 const router = express.Router()
 
+
 const randomNumber = Math.floor(Math.random() * 1000);
 
 const storage = multer.diskStorage({
@@ -20,6 +21,8 @@ import {
     UploadSubjectVideo,
     deleteCourseVideoAndImage
 } from '../controllers/cloudinaryController.js'
+
+// 
 
 import { protect } from '../middleware/authMiddleware.js';
 
