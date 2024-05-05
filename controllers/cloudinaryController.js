@@ -2,8 +2,6 @@ import asyncHandler from 'express-async-handler';
 import cloudinary from '../utils/cloudinary.js'
 import fs from 'node:fs'
 import protect from '../utils/protect.js';
-import { v4 as uuidv4 } from 'uuid';
-
 
 // UPLOAD COURSE IMAGE
 export const UploadCourseImage = asyncHandler(async(req,res,next) => {
@@ -122,7 +120,7 @@ export const UploadSubjectVideo = asyncHandler(async(req,res,next) => {
       return
     }
 
-    const fileSize = Number(req.file.size)/1048576;
+    const fileSize = Number(req.file.size)/1024/1024;
     const fileType = req.file.mimetype.split('/')[0];
 
     if(fileType !== 'video'){
@@ -142,7 +140,7 @@ export const UploadSubjectVideo = asyncHandler(async(req,res,next) => {
     const subjectTitle = req.query.subjectTitle;
     const title = req.query.title;
     const fileTitle = `video_file_${title}`
-    const publicId = `${id}/${uuidv4()}`
+    const publicId = `${id}/${courseTitle}/${subjectTitle}/${fileTitle}`
     cloudinary.uploader.upload_large(`${req.file.path}`,
     { 
     public_id: publicId,

@@ -54,7 +54,7 @@ export const createMongopayPayment = asyncHandler(async (req, res, next) => {
       // })
       try {
         const time = new Date(Date.now()).getTime();
-        const userId = "66370a705b449750d86f342b"
+        const userId = user._id;
         const eventId_mongoose = new mongoose.Types.ObjectId(
           process.env.EVENT_ID
         );
