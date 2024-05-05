@@ -21,7 +21,7 @@ export const UploadCourseImage = asyncHandler(async(req,res,next) => {
     }
 
 
-    const fileSize = Number(req.file.size)/1000000;
+    const fileSize = Number(req.file.size)/1048576;
     const fileType = req.file.mimetype.split('/')[0];
 
     if(fileType !== 'image'){
@@ -69,7 +69,7 @@ export const UploadCourseVideo = asyncHandler(async(req,res,next) => {
       return
     }
 
-    const fileSize = Number(req.file.size)/1000000;
+    const fileSize = Number(req.file.size)/1048576;
     const fileType = req.file.mimetype.split('/')[0];
 
     if(fileType !== 'video'){
@@ -78,7 +78,7 @@ export const UploadCourseVideo = asyncHandler(async(req,res,next) => {
         throw new Error('Invalid file type. please upload only video.');
     }
 
-    if(fileSize > 100){
+    if(fileSize > 500){
         fs.unlinkSync(`${req.file.path}`)
         res.status(404);
         throw new Error('Video file size should be 10mb and below.');
@@ -130,7 +130,7 @@ export const UploadSubjectVideo = asyncHandler(async(req,res,next) => {
         throw new Error('Invalid file type. please upload only video.');
     }
 
-    if(fileSize > 100){
+    if(fileSize > 2000){
         fs.unlinkSync(`${req.file.path}`)
         res.status(404);
         throw new Error('Video file size should be 100mb and below.');
