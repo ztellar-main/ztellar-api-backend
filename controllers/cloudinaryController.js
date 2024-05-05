@@ -121,7 +121,7 @@ export const UploadSubjectVideo = asyncHandler(async(req,res,next) => {
       return
     }
 
-    const fileSize = Number(req.file.size)/1024/1024;
+    const fileSize = Number(req.file.size)/1048576;
     const fileType = req.file.mimetype.split('/')[0];
 
     if(fileType !== 'video'){
