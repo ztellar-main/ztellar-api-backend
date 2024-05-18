@@ -272,10 +272,12 @@ export const updateUser = tryCatch(async (req: Request, res: Response) => {
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 
-    user.password = undefined;
-    user.verify = undefined;
+    const updatedUser = await user.save();
 
-    res.status(200).json({ data: user, token });
+    updatedUser.password = undefined;
+    updatedUser.verify = undefined;
+
+    res.status(200).json({ data: updatedUser, token });
 
   }
 });
