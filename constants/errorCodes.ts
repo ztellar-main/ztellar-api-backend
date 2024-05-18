@@ -1,0 +1,19 @@
+export const USER_NOT_FOUND = "000001x";
+export const EMAIL_DID_NOT_SENT = "000002x";
+export const EMAIL_ALREADY_EXIST = "000003x";
+export const INVALID_OTP = "000004x";
+export const INVALID_EMAIL = "000005x";
+export const EMAIL_ALREADY_REGISTERED = "000006x";
+export const EMAIL_DOES_NOT_EXIST = "000007x";
+export const OTP_DOES_NOT_EXIST = "000008x";
+export const OTP_ALREADY_EXPIRED = "000009x";
+export const INVALID_EMAIL_OR_PASSWORD = "000010x";
+export const SUBJECT_ALREADY_EXIST = "000011x";
+export const TITLE_CANNOT_BE_EMPTY = "000012x";
+export const SUBJECT_DOES_NOT_EXIST = "000013x";
+export const TITLE_ALREADY_EXIST = "000014x";
+export const SOMETHING_WENT_WRONG = "000015x";
+export const VIDEO_TITLE_ALREADY_EXIST = "000016x";
+export const PRODUCT_DOES_NOT_EXIST = "000017x";
+export const NOT_AUTHORIZED = "000018x";
+
