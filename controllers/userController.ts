@@ -262,7 +262,6 @@ export const updateUser = tryCatch(async (req: Request, res: Response) => {
     );
   }
 
-  res.json("success");
 
   if (user) {
     user.fname = fname || user.fname;
