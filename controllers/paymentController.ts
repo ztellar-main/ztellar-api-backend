@@ -13,7 +13,7 @@ export const createPayment = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
     const userId = req.user;
 
-    // const userId = "664731d9d324ee229b299f26";
+    // const userId = "66013d10434f3dabe9624d1a";
 
     const {
       lessAmount,
