@@ -149,9 +149,15 @@ export const googleLogin = tryCatch(async (req: Request, res: Response) => {
 
   let user = await User.findOne({ email });
 
-  const uid = user._id.toString();
+  if (!user) {
+    throw new AppError(
+      INVALID_OTP,
+      "Email is not registered yet. Please register first.",
+      400
+    );
+  }
 
-  const token = jwt.sign({ id: uid }, process.env.JWT_SECRET, {});
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {});
 
   user.password = undefined;
   user.verify = undefined;
@@ -262,7 +268,6 @@ export const updateUser = tryCatch(async (req: Request, res: Response) => {
     );
   }
 
-
   if (user) {
     user.fname = fname || user.fname;
     user.mname = mName || user.mname;
@@ -277,6 +282,5 @@ export const updateUser = tryCatch(async (req: Request, res: Response) => {
     updatedUser.verify = undefined;
 
     res.status(200).json({ data: updatedUser, token });
-
   }
 });
