@@ -250,7 +250,8 @@ export const getOwnedProducts = tryCatch(
     const userId = req.user;
 
     const products = await User.findById(userId).populate({
-      path: "product_owned._id",populate:{path:"feedback"}
+      path: "product_owned._id",
+      populate: { path: "feedback" },
     });
 
     res.status(200).json(products);
@@ -273,7 +274,10 @@ export const getViewEventData = tryCatch(
       .populate([
         { path: "subjects._id", select: "title -_id" },
         { path: "subjects.videos._id", select: "title -_id" },
-        { path: "feedback",populate:{path:"user", select:"avatar fname lname"}}
+        {
+          path: "feedback",
+          populate: { path: "user", select: "avatar fname lname" },
+        },
       ]);
 
     if (!event) {
@@ -281,5 +285,27 @@ export const getViewEventData = tryCatch(
     }
 
     res.json(event);
+  }
+);
+
+// EVENT QR SCAN
+export const eventQrScan = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const userId = req.user;
+    const productId = req.query.id;
+
+    const validate = isValidObjectId(productId);
+
+    if (!validate) {
+      throw new AppError(SOMETHING_WENT_WRONG, "Event does not exist.", 400);
+    }
+
+
+    const event = await Product.findOne({
+      _id: productId,
+      author_id: userId,
+    }).populate({path:'registered._id',select:"fname mname lname avatar email "})
+
+    res.json(event)
   }
 );

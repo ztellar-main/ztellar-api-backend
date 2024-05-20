@@ -12,7 +12,8 @@ import {
   getProductSearchCard,
   findProductId,
   getOwnedProducts,
-  getViewEventData
+  getViewEventData,
+  eventQrScan,
 } from "../controllers/productController";
 
 import { protect } from "../utils/protect";
@@ -32,6 +33,6 @@ router.get("/get-search-product", getProductSearchCard);
 router.get("/find-product-id", protect, findProductId);
 router.get("/get-owned-products", protect, getOwnedProducts);
 router.get("/get-view-event-product", getViewEventData);
-
+router.get("/get-event-qr-scan", protect, eventQrScan);
 
 export default router;
