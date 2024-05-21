@@ -9,7 +9,9 @@ import {
   login,
   getUserOwnedEvent,
   googleLogin,
-  updateUser
+  updateUser,
+  resetPassword,
+  resetPasswordSendOtp
 } from "../controllers/userController";
 
 import { protect } from "../utils/protect";
@@ -22,5 +24,7 @@ router.post("/verify-email-and-signup", verifyEmailandSignup);
 router.get("/get-otp-expiry", getOtpExpiry);
 router.get("/get-user-owned-event", protect, getUserOwnedEvent);
 router.put("/update-user", updateUser);
+router.put("/reset-password", resetPassword);
+router.post("/password-reset-send-otp", resetPasswordSendOtp);
 
 export default router;

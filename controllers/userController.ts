@@ -284,3 +284,69 @@ export const updateUser = tryCatch(async (req: Request, res: Response) => {
     res.status(200).json({ data: updatedUser, token });
   }
 });
+
+// RESET PASSWORD SEND OTP
+export const resetPasswordSendOtp = tryCatch(async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  const emailValidate = EmailValidator.validate(email);
+
+  if (!emailValidate) {
+    throw new AppError(INVALID_EMAIL, "Invalid email.", 400);
+  }
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new AppError(
+      EMAIL_ALREADY_EXIST,
+      "This email is not yet registered.",
+      400
+    );
+  }
+
+  // send otp
+  const sentOtp = await sendOtp(email);
+
+  if (!sentOtp) {
+    throw new AppError(EMAIL_DID_NOT_SENT, "Email did not sent.", 400);
+  }
+
+  res.status(200).json("success");
+});
+
+// REST PASSWORD
+export const resetPassword = tryCatch(async (req: Request, res: Response) => {
+  const { email, otp, password } = req.body;
+  const dateNow = new Date(Date.now());
+
+  const userOtp = await Otp.findOne({ email });
+  const hashedOtp = userOtp.otp;
+  const expiredAt = userOtp.expiredAt;
+
+  console.log(email);
+
+  if (expiredAt < dateNow) {
+    throw new AppError(OTP_ALREADY_EXPIRED, "OTP already expired.", 400);
+  }
+
+  const otpVerify = await bcrypt.compare(otp, hashedOtp);
+
+  if (otpVerify === false) {
+    throw new AppError(INVALID_OTP, "Invalid OTP.", 400);
+  }
+
+  const user = await User.findOne({ email: email });
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  console.log(user);
+
+  user.password = hashedPassword || user.password;
+
+  console.log(user.password);
+
+  const saveUser = await user.save();
+
+  res.status(200).json("success");
+});
