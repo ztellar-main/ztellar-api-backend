@@ -286,34 +286,36 @@ export const updateUser = tryCatch(async (req: Request, res: Response) => {
 });
 
 // RESET PASSWORD SEND OTP
-export const resetPasswordSendOtp = tryCatch(async (req: Request, res: Response) => {
-  const { email } = req.body;
+export const resetPasswordSendOtp = tryCatch(
+  async (req: Request, res: Response) => {
+    const { email } = req.body;
 
-  const emailValidate = EmailValidator.validate(email);
+    const emailValidate = EmailValidator.validate(email);
 
-  if (!emailValidate) {
-    throw new AppError(INVALID_EMAIL, "Invalid email.", 400);
+    if (!emailValidate) {
+      throw new AppError(INVALID_EMAIL, "Invalid email.", 400);
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      throw new AppError(
+        EMAIL_ALREADY_EXIST,
+        "This email is not yet registered.",
+        400
+      );
+    }
+
+    // send otp
+    const sentOtp = await sendOtp(email);
+
+    if (!sentOtp) {
+      throw new AppError(EMAIL_DID_NOT_SENT, "Email did not sent.", 400);
+    }
+
+    res.status(200).json("success");
   }
-
-  const user = await User.findOne({ email });
-
-  if (!user) {
-    throw new AppError(
-      EMAIL_ALREADY_EXIST,
-      "This email is not yet registered.",
-      400
-    );
-  }
-
-  // send otp
-  const sentOtp = await sendOtp(email);
-
-  if (!sentOtp) {
-    throw new AppError(EMAIL_DID_NOT_SENT, "Email did not sent.", 400);
-  }
-
-  res.status(200).json("success");
-});
+);
 
 // REST PASSWORD
 export const resetPassword = tryCatch(async (req: Request, res: Response) => {
@@ -350,3 +352,49 @@ export const resetPassword = tryCatch(async (req: Request, res: Response) => {
 
   res.status(200).json("success");
 });
+
+// USER LIST
+export const userList = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    let queryStr = JSON.stringify(req.query);
+
+    let queryObj = JSON.parse(queryStr);
+
+    const { email } = req.query;
+
+    const e = email.toString();
+
+    const a = new RegExp(e, "i");
+
+    queryObj.email = a;
+    // console.log(queryObj);
+
+    // console.log(id)
+    const users = await User.find(queryObj);
+
+    res.status(200).json(users);
+  }
+);
+
+// CHANGE PROFILE PICTURE
+export const changeProfilePic = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const userId = req.user;
+    const imageUrl = req.body.imageUrl;
+
+    let user = await User.findOne({ _id: userId });
+
+    console.log(user);
+
+    if (!user) {
+      throw new AppError(SOMETHING_WENT_WRONG, "Please login", 400);
+    }
+
+    user.avatar = imageUrl || user.avatar;
+
+    const saveImage = await user.save();
+    saveImage.password = undefined;
+
+    res.status(200).json(saveImage);
+  }
+);
