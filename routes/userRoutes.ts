@@ -14,6 +14,8 @@ import {
   resetPasswordSendOtp,
   userList,
   changeProfilePic,
+  authorSumTotal,
+  getUserForLoginUpdate,
 } from "../controllers/userController";
 
 import { protect } from "../utils/protect";
@@ -30,5 +32,7 @@ router.put("/reset-password", resetPassword);
 router.post("/password-reset-send-otp", resetPasswordSendOtp);
 router.get("/user-list", userList);
 router.put("/change-profile-pic", protect, changeProfilePic);
+router.get("/author-sum", authorSumTotal);
+router.get("/get-user-for-login", getUserForLoginUpdate);
 
 export default router;

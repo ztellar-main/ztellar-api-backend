@@ -21,6 +21,9 @@ import Otp from "../models/otpModel";
 import * as EmailValidator from "email-validator";
 import jwt from "jsonwebtoken";
 import { isValidObjectId } from "mongoose";
+import Product from "../models/productModel";
+import mongoose from "mongoose";
+import Payment from "../models/paymentModel";
 
 export interface IGetUserAuthInfoRequest extends Request {
   user: any; // or any other type
@@ -253,7 +256,7 @@ export const updateUser = tryCatch(async (req: Request, res: Response) => {
   if (!fname || !lname || !mobileNumber || !mName || !userId) {
     throw new AppError(
       SOMETHING_WENT_WRONG,
-      "Credential expired. Please login in again.",
+      "Please fill up all fields.",
       400
     );
   }
@@ -370,7 +373,10 @@ export const userList = tryCatch(
     // console.log(queryObj);
 
     // console.log(id)
-    const users = await User.find(queryObj);
+
+    const users = await Product.findOne({
+      _id: "6648503390c6701b9188f02e",
+    }).populate({ path: "registered._id" });
 
     res.status(200).json(users);
   }
@@ -396,5 +402,39 @@ export const changeProfilePic = tryCatch(
     saveImage.password = undefined;
 
     res.status(200).json(saveImage);
+  }
+);
+
+// AUTHOR SUM AND TOTAL
+export const authorSumTotal = tryCatch(async (req: Request, res: Response) => {
+  const productId = "6647f177f0cc04f6055fb3f6";
+  const jpsmeId = "6648503390c6701b9188f02e";
+
+  const PSME = await Payment.find({
+    product_id: productId,
+  });
+
+  const JPSME = await Payment.find({
+    product_id: jpsmeId,
+  });
+
+  res.json({ PSME, JPSME });
+});
+
+export const getUserForLoginUpdate = tryCatch(
+  async (req: Request, res: Response) => {
+    const { id } = req.query;
+
+    const user = await User.findOne({
+      _id: id,
+    }).select("fname mname lname mobile_number")
+
+    console.log(user)
+
+    if (!user) {
+      throw new AppError(SOMETHING_WENT_WRONG, "Please login again.", 400);
+    }
+
+    res.status(200).json(user);
   }
 );
