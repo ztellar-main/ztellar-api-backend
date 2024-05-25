@@ -251,14 +251,10 @@ export const getUserOwnedEvent = tryCatch(
 export const updateUser = tryCatch(async (req: Request, res: Response) => {
   const { fname, lname, mobileNumber, mName, agreement, userId } = req.body;
 
-  console.log({ fname, lname, mobileNumber, mName, agreement, userId });
+  // console.log({ fname, lname, mobileNumber, mName, agreement, userId });
 
   if (!fname || !lname || !mobileNumber || !mName || !userId) {
-    throw new AppError(
-      SOMETHING_WENT_WRONG,
-      "Please fill up all fields.",
-      400
-    );
+    throw new AppError(SOMETHING_WENT_WRONG, "Please fill up all fields.", 400);
   }
 
   const user = await User.findById(userId);
@@ -329,8 +325,6 @@ export const resetPassword = tryCatch(async (req: Request, res: Response) => {
   const hashedOtp = userOtp.otp;
   const expiredAt = userOtp.expiredAt;
 
-  console.log(email);
-
   if (expiredAt < dateNow) {
     throw new AppError(OTP_ALREADY_EXPIRED, "OTP already expired.", 400);
   }
@@ -345,11 +339,7 @@ export const resetPassword = tryCatch(async (req: Request, res: Response) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  console.log(user);
-
   user.password = hashedPassword || user.password;
-
-  console.log(user.password);
 
   const saveUser = await user.save();
 
@@ -370,9 +360,6 @@ export const userList = tryCatch(
     const a = new RegExp(e, "i");
 
     queryObj.email = a;
-    // console.log(queryObj);
-
-    // console.log(id)
 
     const users = await Product.findOne({
       _id: "6648503390c6701b9188f02e",
@@ -389,8 +376,6 @@ export const changeProfilePic = tryCatch(
     const imageUrl = req.body.imageUrl;
 
     let user = await User.findOne({ _id: userId });
-
-    console.log(user);
 
     if (!user) {
       throw new AppError(SOMETHING_WENT_WRONG, "Please login", 400);
@@ -427,9 +412,7 @@ export const getUserForLoginUpdate = tryCatch(
 
     const user = await User.findOne({
       _id: id,
-    }).select("fname mname lname mobile_number")
-
-    console.log(user)
+    }).select("fname mname lname mobile_number");
 
     if (!user) {
       throw new AppError(SOMETHING_WENT_WRONG, "Please login again.", 400);
