@@ -16,6 +16,7 @@ import {
 } from "../constants/errorCodes";
 import Video from "../models/videoModel";
 import User from "../models/userModel";
+import { Document } from "mongoose";
 
 export interface IGetUserAuthInfoRequest extends Request {
   user: any; // or any other type
@@ -300,12 +301,22 @@ export const eventQrScan = tryCatch(
       throw new AppError(SOMETHING_WENT_WRONG, "Event does not exist.", 400);
     }
 
-
     const event = await Product.findOne({
       _id: productId,
       author_id: userId,
-    }).populate({path:'registered._id',select:"fname mname lname avatar email "})
+    }).populate({
+      path: "registered._id",
+      select: "fname mname lname avatar email ",
+    });
 
-    res.json(event)
+    res.json(event);
   }
 );
+
+export const updateLinks = tryCatch(async (req: Request, res: Response) => {
+  let product = await Product.findOne({ _id: "6647ecb58bdc451f02b42dff" });
+
+
+
+  res.json(product);
+});

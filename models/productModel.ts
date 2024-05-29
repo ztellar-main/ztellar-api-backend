@@ -52,6 +52,10 @@ const productSchema = new mongoose.Schema(
         qr_code: String,
         reg_type: String,
         product_type: String,
+        pass: {
+          type: Boolean,
+          default: false,
+        },
       },
     ],
     feedback: [
@@ -68,6 +72,20 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    attendance: [
+      {
+        title: String,
+        link: String,
+      },
+    ],
+    quiz: [
+      {
+        title: String,
+        subtitle:String,
+        speaker:String,
+        link: String,
+      },
+    ],
   },
 
   { timestamps: true }

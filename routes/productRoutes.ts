@@ -14,6 +14,7 @@ import {
   getOwnedProducts,
   getViewEventData,
   eventQrScan,
+  updateLinks
 } from "../controllers/productController";
 
 import { protect } from "../utils/protect";
@@ -34,5 +35,8 @@ router.get("/find-product-id", protect, findProductId);
 router.get("/get-owned-products", protect, getOwnedProducts);
 router.get("/get-view-event-product", getViewEventData);
 router.get("/get-event-qr-scan", protect, eventQrScan);
+router.put("/save-attendance", updateLinks);
+
+
 
 export default router;
