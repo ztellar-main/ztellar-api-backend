@@ -229,7 +229,7 @@ export const getUserOwnedEvent = tryCatch(
         populate: [{ path: "subjects._id" }, { path: "subjects.videos._id" }],
       });
 
-    const user = await User.findOne({ _id: userId }).select("fname lname -_id");
+    const user = await User.findOne({ _id: userId }).select("fname lname mname -_id");
 
     if (!userOwnedEvent) {
       throw new AppError(SOMETHING_WENT_WRONG, "Invalid id.", 400);
