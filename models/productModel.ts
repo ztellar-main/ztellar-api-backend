@@ -81,9 +81,21 @@ const productSchema = new mongoose.Schema(
     quiz: [
       {
         title: String,
-        subtitle:String,
-        speaker:String,
+        subtitle: String,
+        speaker: String,
         link: String,
+      },
+    ],
+    certificate: [
+      {
+        align_items: String,
+        top: String,
+        width: String,
+        orientation: String,
+        size: String,
+        image_src: String,
+        margin_left:String,
+        certificate_name:String
       },
     ],
   },
