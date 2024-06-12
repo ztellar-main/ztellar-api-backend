@@ -143,3 +143,70 @@ export const createPaymentCashPayment = tryCatch(
     res.status(201).json("success");
   }
 );
+
+// CASH PAYMENT
+export const createCashPayment = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const {
+      authorId,
+      productId,
+      productType,
+      regType,
+      buyerId,
+      priceFinal
+    } = req.body;
+
+    const userId = buyerId;
+
+    const authorPaymentFinal = Number(priceFinal) * .9;
+    const ztellarFeeFinal = Number(priceFinal) * .1;
+
+    console.log({authorId,productId,productType,regType,buyerId,priceFinal,authorPaymentFinal,ztellarFeeFinal,userId})
+
+    const userUpdate = await User.findByIdAndUpdate(
+      { _id: userId },
+      {
+        $push: {
+          product_owned: {
+            _id: productId,
+            qr_code: userId,
+            reg_type: regType,
+            product_type: productType,
+          },
+        },
+      },
+      { new: true, upsert: true }
+    );
+
+    const courseUpdate = await Product.findByIdAndUpdate(
+      { _id: productId },
+      {
+        $push: {
+          registered: {
+            _id: userId,
+            qr_code: userId,
+            reg_type: regType,
+            product_type: productType,
+          },
+        },
+      },
+      { new: true, upsert: true }
+    );
+
+
+
+    const savePayment = await Payment.create({
+      author_id: authorId,
+      product_type: productType,
+      product_id: productId,
+      reg_type: regType,
+      buyer_id: buyerId,
+      payment_mode: "cash",
+      payment_source: "ztellar",
+      author_payment: authorPaymentFinal,
+      ztellar_fee: ztellarFeeFinal,
+    });
+
+    res.status(201).json("success");
+  }
+);

@@ -12,6 +12,7 @@ const connectDB = async () => {
         console.log(err.message);
         setTimeout(connectDB, 5000);
     }
+
 };
 
 export default connectDB
