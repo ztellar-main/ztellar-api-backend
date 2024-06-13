@@ -421,3 +421,21 @@ export const getUserForLoginUpdate = tryCatch(
     res.status(200).json(user);
   }
 );
+
+export const getUser = tryCatch(
+  async (req: Request, res: Response) => {
+    const userId = req.body.userId;
+
+    // console.log(userId)
+    // console.log("sample")
+
+    const user = await User.findOne({"_id":userId});
+
+    console.log(user)
+
+    if(!user){
+      throw new AppError(SOMETHING_WENT_WRONG, "User id is invalid or not yet registered.", 400);
+    }
+
+    res.status(200).json({message:"success"})
+  })
