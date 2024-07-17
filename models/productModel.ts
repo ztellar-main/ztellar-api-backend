@@ -98,6 +98,8 @@ const productSchema = new mongoose.Schema(
         certificate_name:String
       },
     ],
+    date_start:Date,
+    date_end:Date
   },
 
   { timestamps: true }

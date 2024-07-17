@@ -30,18 +30,36 @@ app.get("/test", (req: Request, res: Response, next: NextFunction) => {
   });
 });
 
+app.put("/update-user", async (req: Request, res: Response) => {
+  const updatedUser = await User.updateMany(
+    {},
+    {
+      $set: {
+        avatar:
+          "https://firebasestorage.googleapis.com/v0/b/ztellar-11a4f.appspot.com/o/ztellar%2FGroup%20208%201.png?alt=media&token=990404ef-455b-46fa-b495-4589da03a5a8",
+      },
+    },
+    { new: true }
+  );
+
+  res.json(updatedUser);
+});
+
 // routes
 import userRoutes from "./routes/userRoutes";
 import productRouter from "./routes/productRoutes";
 import paymongoRoutes from "./routes/paymongoRoutes";
 import paymentRoutes from "./routes/paymentRoutes";
 import feedbackRoutes from "./routes/feedbackRoutes";
+import User from "./models/userModel";
+import privateVideoRoutes from "./routes/privateVideoRoutes";
 
 app.use("/api/users", userRoutes);
 app.use("/api/product", productRouter);
 app.use("/api/paymongo", paymongoRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/feedback", feedbackRoutes);
+app.use("/api/private-video", privateVideoRoutes);
 
 // error handler
 app.use(errorHandler);

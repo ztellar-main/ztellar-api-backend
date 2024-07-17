@@ -16,7 +16,8 @@ import {
   changeProfilePic,
   authorSumTotal,
   getUserForLoginUpdate,
-  getUser
+  getUser,
+  updateProfilePicAll,
 } from "../controllers/userController";
 
 import { protect } from "../utils/protect";
@@ -36,7 +37,6 @@ router.put("/change-profile-pic", protect, changeProfilePic);
 router.get("/author-sum", authorSumTotal);
 router.get("/get-user-for-login", getUserForLoginUpdate);
 router.post("/user-exist", getUser);
-
-
+router.put("/update-all-profile-pic", updateProfilePicAll);
 
 export default router;

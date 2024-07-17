@@ -229,15 +229,18 @@ export const getUserOwnedEvent = tryCatch(
         populate: [{ path: "subjects._id" }, { path: "subjects.videos._id" }],
       });
 
-    const user = await User.findOne({ _id: userId }).select("fname lname mname -_id");
+    const user = await User.findOne({ _id: userId }).select(
+      "fname lname mname -_id"
+    );
 
     if (!userOwnedEvent) {
       throw new AppError(SOMETHING_WENT_WRONG, "Invalid id.", 400);
     }
 
-    const findEvent = userOwnedEvent.product_owned.find(
-      (e: any) => (e.id = id)
-    );
+    const findEvent = userOwnedEvent.product_owned.find((e: any) => {
+      // console.log(e.id = id);
+      return e._id._id == id;
+    });
 
     if (!findEvent) {
       throw new AppError(SOMETHING_WENT_WRONG, "Invalid id.", 400);
@@ -422,20 +425,40 @@ export const getUserForLoginUpdate = tryCatch(
   }
 );
 
-export const getUser = tryCatch(
+export const getUser = tryCatch(async (req: Request, res: Response) => {
+  const userId = req.body.userId;
+
+  // console.log(userId)
+  // console.log("sample")
+
+  const user = await User.findOne({ _id: userId });
+
+  console.log(user);
+
+  if (!user) {
+    throw new AppError(
+      SOMETHING_WENT_WRONG,
+      "User id is invalid or not yet registered.",
+      400
+    );
+  }
+
+  res.status(200).json({ message: "success" });
+});
+
+export const updateProfilePicAll = tryCatch(
   async (req: Request, res: Response) => {
-    const userId = req.body.userId;
+    const updatedUser = await User.updateMany(
+      {},
+      {
+        $set: {
+          avatar:
+            "https://firebasestorage.googleapis.com/v0/b/ztellar-11a4f.appspot.com/o/ztellar%2FGroup%20208%201.png?alt=media&token=990404ef-455b-46fa-b495-4589da03a5a8",
+        },
+      },
+      { new: true }
+    );
 
-    // console.log(userId)
-    // console.log("sample")
-
-    const user = await User.findOne({"_id":userId});
-
-    console.log(user)
-
-    if(!user){
-      throw new AppError(SOMETHING_WENT_WRONG, "User id is invalid or not yet registered.", 400);
-    }
-
-    res.status(200).json({message:"success"})
-  })
+    res.json(updatedUser);
+  }
+);

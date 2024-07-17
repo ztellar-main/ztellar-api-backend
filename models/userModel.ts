@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
     mobile_number: Number,
     avatar: {
       type: String,
-      default: "ztellar/ztellar/pzoz9wj3y3onkg62dcdx",
+      default: "https://firebasestorage.googleapis.com/v0/b/ztellar-11a4f.appspot.com/o/ztellar%2FGroup%20208%201.png?alt=media&token=990404ef-455b-46fa-b495-4589da03a5a8",
     },
     role: {
       type: String,

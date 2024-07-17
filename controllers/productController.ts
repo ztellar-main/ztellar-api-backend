@@ -122,7 +122,7 @@ export const checkEventSubject = tryCatch(
       );
     }
 
-    const subject = await Subject.find({
+    const subject = await Subject.findOne({
       _id: subjectId,
       product_id: productId,
       author_id: userId,
@@ -279,6 +279,10 @@ export const getViewEventData = tryCatch(
           path: "feedback",
           populate: { path: "user", select: "avatar fname lname" },
         },
+        {
+          path: "author_id",
+          select: "fname lname avatar",
+        },
       ]);
 
     if (!event) {
@@ -316,32 +320,7 @@ export const eventQrScan = tryCatch(
 export const updateLinks = tryCatch(async (req: Request, res: Response) => {
   let product = await Product.findOne({ _id: "6647f177f0cc04f6055fb3f6" });
 
-  product.certificate.push(
-    {
-      align_items: "center",
-      top: "265px",
-      width: "100%",
-      orientation: "landscape",
-      size: "a4",
-      image_src:
-        "https://res.cloudinary.com/dbagrkam0/image/upload/v1717308761/ztellar/ljnhrzoj1vh78k6jpuq0.jpg",
-      margin_left: "-55px",
-      certificate_name: "Attendance Certificate",
-    },
-    {
-      align_items: "center",
-      top: "355px",
-      width: "100%",
-      orientation: "portrait",
-      size: "a4",
-      image_src:
-        "https://res.cloudinary.com/dbagrkam0/image/upload/v1717102167/ztellar/yf9tcsjfpozq7jdqqt4y.jpg",
-      margin_left: "0",
-      certificate_name: "Event Certificate",
-    }
-  );
-
-  const a = await product.save()
-
-  res.json(a);
+  res.json("sample");
 });
+
+//
