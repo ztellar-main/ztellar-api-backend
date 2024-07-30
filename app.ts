@@ -53,6 +53,7 @@ import paymentRoutes from "./routes/paymentRoutes";
 import feedbackRoutes from "./routes/feedbackRoutes";
 import User from "./models/userModel";
 import privateVideoRoutes from "./routes/privateVideoRoutes";
+import authorRoutes from './routes/authorRoutes'
 
 app.use("/api/users", userRoutes);
 app.use("/api/product", productRouter);
@@ -60,6 +61,7 @@ app.use("/api/paymongo", paymongoRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/private-video", privateVideoRoutes);
+app.use("/api/author", authorRoutes);
 
 // error handler
 app.use(errorHandler);

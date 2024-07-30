@@ -14,7 +14,10 @@ import {
   getOwnedProducts,
   getViewEventData,
   eventQrScan,
-  updateLinks
+  updateLinks,
+  updateQuestionToEvent,
+  getEventQuestion,
+  saveAnswerOfEvent,
 } from "../controllers/productController";
 
 import { protect } from "../utils/protect";
@@ -36,7 +39,8 @@ router.get("/get-owned-products", protect, getOwnedProducts);
 router.get("/get-view-event-product", getViewEventData);
 router.get("/get-event-qr-scan", protect, eventQrScan);
 router.put("/save-attendance", updateLinks);
-
-
+router.put("/update-questions-of-events", updateQuestionToEvent);
+router.get("/get-event-questions", protect, getEventQuestion);
+router.put("/save-answer-on-event", protect, saveAnswerOfEvent);
 
 export default router;

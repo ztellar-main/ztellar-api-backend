@@ -94,14 +94,50 @@ const productSchema = new mongoose.Schema(
         orientation: String,
         size: String,
         image_src: String,
-        margin_left:String,
-        certificate_name:String
+        margin_left: String,
+        certificate_name: String,
       },
     ],
-    date_start:Date,
-    date_end:Date
+    // COURSE
+    course_price: {
+      price_description: String,
+      price_value: Number,
+    },
+    course_subjects: [
+      {
+        _id: {
+          type: mongoose.Schema.ObjectId,
+          ref: "CourseSubject",
+        },
+        video: [
+          {
+            _id: {
+              type: mongoose.Schema.ObjectId,
+              ref: "CourseVideo",
+            },
+          },
+        ],
+      },
+    ],
+    date_start: Date,
+    date_end: Date,
+    questions: [
+      {
+        question: String,
+        choices: [
+          {
+            label: String,
+            description: String,
+          },
+        ],
+        answer: String,
+        time: {
+          type: Number,
+          default: 5,
+        },
+      },
+    ],
   },
-
   { timestamps: true }
 );
 

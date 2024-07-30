@@ -323,4 +323,186 @@ export const updateLinks = tryCatch(async (req: Request, res: Response) => {
   res.json("sample");
 });
 
-//
+// ADD QUESTION
+export const updateQuestionToEvent = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const productId = "6688de27a366e5146109d850";
+    const asd = [
+      {
+        question: "1. This is question",
+        choices: [
+          {
+            label: "c",
+            description: "This is a sample description",
+          },
+          {
+            label: "b",
+            description: "This is a sample description",
+          },
+          {
+            label: "d",
+            description: "This is a sample description",
+          },
+        ],
+        answer: "c",
+      },
+      {
+        question: "2. This is question",
+        choices: [
+          {
+            label: "d",
+            description: "This is a sample description",
+          },
+          {
+            label: "e",
+            description: "This is a sample description",
+          },
+        ],
+        answer: "d",
+      },
+    ];
+
+    const udpated = await Product.findOneAndUpdate(
+      {
+        _id: productId,
+      },
+      {
+        $set: { questions: asd },
+      },
+      { new: true }
+    );
+
+    res.json(udpated);
+  }
+);
+
+// get event question
+export const getEventQuestion = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { id } = req.query;
+    const userId = req.user;
+
+    const product = await Product.findOne({ _id: id });
+
+    // check if user is registered start
+    const a = product.registered.find((data) => {
+      const a = data._id.toString();
+      const b = a == userId;
+      return b;
+    });
+
+    if (!a) {
+      throw new AppError(
+        SOMETHING_WENT_WRONG,
+        "User is not registered on this event.",
+        400
+      );
+    }
+    // check if user is registered end
+
+    const answersFromUser = await User.findOne({ _id: userId });
+
+    const ifAnswerExistOnUser = answersFromUser.answers.find((data) => {
+      return data.product_id.toString() == id;
+    });
+
+    // console.log(ifAnswerExistOnUser.finished);
+
+    // console.log(ifAnswerExistOnUser);
+
+    if (ifAnswerExistOnUser?.finished === true) {
+      return res.json({ data: ifAnswerExistOnUser, finished: true });
+    }
+
+    if (!ifAnswerExistOnUser) {
+      const questionIndex = 0;
+      let question = product.questions[questionIndex];
+
+      question.answer = undefined;
+
+      return res.json({
+        question,
+        index: questionIndex,
+        questionLength: product.questions.length,
+        finished: false,
+      });
+    }
+
+    const answersLength = ifAnswerExistOnUser.answers.length;
+    let question = product.questions[answersLength];
+    question.answer = undefined;
+
+    res.json({
+      question,
+      index: answersLength,
+      questionLength: product.questions.length,
+      finished: false,
+    });
+  }
+);
+
+// save answer of event
+export const saveAnswerOfEvent = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const userId = req.user;
+    const { answer, productId, questionIndex } = req.body;
+
+    // product questions
+    const productQuestion = await Product.findOne({ _id: productId });
+
+    const answerCount = questionIndex + 1;
+    const questionCount = productQuestion.questions.length;
+
+    const questionAnswer = productQuestion.questions[questionIndex].answer;
+
+    // check the product id if exist on users answers
+    const answersFromUser = await User.findOne({ _id: userId });
+
+    const ifAnswerExistOnUser = answersFromUser.answers.find((data) => {
+      return data.product_id == productId;
+    });
+
+    if (!ifAnswerExistOnUser) {
+      await User.findOneAndUpdate(
+        {
+          _id: userId,
+        },
+        {
+          $set: {
+            answers: { product_id: productId },
+          },
+        },
+        { new: true }
+      );
+    }
+
+    // save answer
+    const udpateUserAnswer = await User.findOneAndUpdate(
+      {
+        _id: userId,
+      },
+      {
+        $push: {
+          "answers.$[e1].answers": {
+            number: 1,
+            answer: answer,
+            correct: questionAnswer === answer ? true : false,
+          },
+        },
+        $inc: {
+          "answers.$[e1].score": questionAnswer === answer ? 1 : 0,
+        },
+        $set: {
+          "answers.$[e1].finished":
+            answerCount === questionCount ? true : false,
+        },
+      },
+      {
+        arrayFilters: [{ "e1.product_id": productId }],
+        new: true,
+      }
+    );
+
+    res.json(udpateUserAnswer);
+  }
+);
