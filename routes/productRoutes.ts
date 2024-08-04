@@ -18,6 +18,8 @@ import {
   updateQuestionToEvent,
   getEventQuestion,
   saveAnswerOfEvent,
+  addSponsorLogoToEvent,
+  addSponsorPostOnEventView,
 } from "../controllers/productController";
 
 import { protect } from "../utils/protect";
@@ -42,5 +44,7 @@ router.put("/save-attendance", updateLinks);
 router.put("/update-questions-of-events", updateQuestionToEvent);
 router.get("/get-event-questions", protect, getEventQuestion);
 router.put("/save-answer-on-event", protect, saveAnswerOfEvent);
+router.put("/save-event-sponsor-logo", addSponsorLogoToEvent);
+router.put("/save-event-sponsor-post", addSponsorPostOnEventView);
 
 export default router;

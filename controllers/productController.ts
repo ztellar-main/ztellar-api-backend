@@ -506,3 +506,45 @@ export const saveAnswerOfEvent = tryCatch(
     res.json(udpateUserAnswer);
   }
 );
+
+// add sponsor logo to event
+export const addSponsorLogoToEvent = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const udpatedEvent = await Product.findOneAndUpdate(
+      {
+        _id: "6647f177f0cc04f6055fb3f6",
+      },
+      {
+        $set: { sponsors_logo: req.body },
+      },
+      {
+        new: true,
+      }
+    );
+
+    res.json(udpatedEvent);
+  }
+);
+
+// add sponsor post on view event
+export const addSponsorPostOnEventView = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+
+    try {
+      const updatedEvent = await Product.findOneAndUpdate(
+        {
+          _id: "6647f177f0cc04f6055fb3f6",
+        },
+        {
+          $set: { sponsors_post: req.body },
+        },
+        {
+          new: true,
+        }
+      );
+      res.json(updatedEvent);
+    } catch (err) {
+      return res.json(err);
+    }
+  }
+);

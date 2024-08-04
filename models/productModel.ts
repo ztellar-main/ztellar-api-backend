@@ -137,6 +137,24 @@ const productSchema = new mongoose.Schema(
         },
       },
     ],
+    sponsors_logo: [
+      {
+        sponsors_name: String,
+        url: String,
+      },
+    ],
+    sponsors_post: [
+      {
+        name: String,
+        logo: String,
+        post_data: [
+          {
+            url: String,
+            file_type: String,
+          },
+        ],
+      },
+    ],
   },
   { timestamps: true }
 );
