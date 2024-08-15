@@ -155,7 +155,42 @@ const productSchema = new mongoose.Schema(
         ],
       },
     ],
+    sponsors_videos: [
+      {
+        name: String,
+        logo: String,
+        post_data: [
+          {
+            url: String,
+            file_type: String,
+          },
+        ],
+      },
+    ],
+    sponsors_boot: [
+      {
+        boot_legend: String,
+        boor_message: String,
+        file_letter_url: String,
+
+        boot_list: [
+          {
+            boot_number: String,
+            status:String,
+            reserved_by: String,
+            sold_to: String,
+            prices: [
+              {
+                price_name: String,
+                price: Number,
+              },
+            ],
+          },
+        ],
+      },
+    ],
   },
+
   { timestamps: true }
 );
 

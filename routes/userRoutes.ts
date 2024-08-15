@@ -18,6 +18,8 @@ import {
   getUserForLoginUpdate,
   getUser,
   updateProfilePicAll,
+  companyVerifyEmailandSignup,
+  sponsorReserveAndSendEmail,
 } from "../controllers/userController";
 
 import { protect } from "../utils/protect";
@@ -38,5 +40,7 @@ router.get("/author-sum", authorSumTotal);
 router.get("/get-user-for-login", getUserForLoginUpdate);
 router.post("/user-exist", getUser);
 router.put("/update-all-profile-pic", updateProfilePicAll);
+router.post("/company-verify-email-and-signup", companyVerifyEmailandSignup);
+router.put("/sponsor-reserve", sponsorReserveAndSendEmail);
 
 export default router;

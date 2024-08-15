@@ -76,6 +76,10 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
+    // COMPANY
+    company_name: String,
+    company_contact_number: Number,
+
   },
   { timestamps: true }
 );

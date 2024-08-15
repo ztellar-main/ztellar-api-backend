@@ -82,3 +82,36 @@ export const authorProducts = tryCatch(
     res.json(aggregatedPayment);
   }
 );
+
+// add sponsor boot
+export const addSponsorBoot = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { id } = req.query;
+    const updatedCourse = await Product.findOneAndUpdate(
+      {
+        _id: id,
+      },
+      {
+        $set: { sponsors_boot: req.body },
+      },
+      {
+        new: true,
+      }
+    );
+
+    res.json(updatedCourse);
+  }
+);
+
+// get sponsors boot
+export const getSponsorsBoot = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { id } = req.query;
+
+    const productSponsorsBoot = await Product.findOne({ _id: id }).select(
+      "title sponsors_boot"
+    );
+
+    res.json(productSponsorsBoot);
+  }
+);

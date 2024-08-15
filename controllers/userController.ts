@@ -24,6 +24,7 @@ import { isValidObjectId } from "mongoose";
 import Product from "../models/productModel";
 import mongoose from "mongoose";
 import Payment from "../models/paymentModel";
+import { sendEmail } from "../utils/sendEmail";
 
 export interface IGetUserAuthInfoRequest extends Request {
   user: any; // or any other type
@@ -123,6 +124,66 @@ export const verifyEmailandSignup = tryCatch(
       fname,
       lname,
       verify: true,
+    });
+
+    const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
+
+    newUser.password = undefined;
+    newUser.verify = undefined;
+
+    res.status(201).json({ data: newUser, token });
+  }
+);
+
+// COMPANY VERIFY EMAIL AND SIGNUP
+export const companyVerifyEmailandSignup = tryCatch(
+  async (req: Request, res: Response) => {
+    const { email, companyName, companyContactNumber, password, otp } =
+      req.body;
+    const dateNow = new Date(Date.now());
+
+    if (!email || !companyName || !companyContactNumber || !password) {
+      throw new AppError(
+        EMAIL_DOES_NOT_EXIST,
+        "Something went wrong please sign up again.",
+        400
+      );
+    }
+
+    const user = await User.findOne({ email });
+
+    if (user) {
+      throw new AppError(
+        EMAIL_ALREADY_REGISTERED,
+        "This email is already registered.",
+        400
+      );
+    }
+
+    const userOtp = await Otp.findOne({ email });
+    const hashedOtp = userOtp.otp;
+    const expiredAt = userOtp.expiredAt;
+
+    if (expiredAt < dateNow) {
+      throw new AppError(OTP_ALREADY_EXPIRED, "OTP already expired.", 400);
+    }
+
+    const otpVerify = await bcrypt.compare(otp, hashedOtp);
+
+    if (otpVerify === false) {
+      throw new AppError(INVALID_OTP, "Invalid OTP.", 400);
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // CREATE USER
+    const newUser = await User.create({
+      email,
+      password: hashedPassword,
+      company_name: companyName,
+      company_contact_number: companyContactNumber,
+      verify: true,
+      role: "company",
     });
 
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
@@ -460,5 +521,47 @@ export const updateProfilePicAll = tryCatch(
     );
 
     res.json(updatedUser);
+  }
+);
+
+// sponsor reserve and send email
+export const sponsorReserveAndSendEmail = tryCatch(
+  async (req: Request, res: Response) => {
+    const {
+      productId,
+      senderEmail,
+      eventTitle,
+      bootNumber,
+      sponsorType,
+      sponsorPrice,
+      bootId,
+    } = req.body;
+
+    sendEmail(
+      "denverbigayan1@gmail.com",
+      senderEmail,
+      eventTitle,
+      bootNumber,
+      sponsorType,
+      sponsorPrice
+    );
+
+    const productData = await Product.findOneAndUpdate(
+      {
+        _id: productId,
+      },
+      {
+        $set: { "sponsors_boot.$[e1].boot_list.$[e2].status": "Reserved" },
+      },
+      {
+        arrayFilters: [
+          { "e1._id": "66bd9a33440a4a846164555e" },
+          { "e2._id": bootId },
+        ],
+        new: true,
+      }
+    );
+
+    res.json(productData);
   }
 );

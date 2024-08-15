@@ -529,14 +529,14 @@ export const addSponsorLogoToEvent = tryCatch(
 // add sponsor post on view event
 export const addSponsorPostOnEventView = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
-
+    console.log(req.body);
     try {
       const updatedEvent = await Product.findOneAndUpdate(
         {
           _id: "6647f177f0cc04f6055fb3f6",
         },
         {
-          $set: { sponsors_post: req.body },
+          $set: { sponsors_videos: req.body },
         },
         {
           new: true,
