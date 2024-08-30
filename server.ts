@@ -6,11 +6,12 @@ import connectDB from './utils/db';
 const port = process.env.PORT;
 const socketport = process.env.SOCKETPORT;
 
-server.listen(socketport, () => {
-  console.log(`Server is running at port ${socketport}.`);
-});
-
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Server is running at port ${port}.`);
   connectDB();
 });
+
+// app.listen(port, () => {
+//   console.log(`Server is running at port ${port}.`);
+
+// });
