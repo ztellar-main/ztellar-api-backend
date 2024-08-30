@@ -36,26 +36,7 @@ export const convertToHLSAndUpload = async (
   filePath: any,
   filename: any
 ) => {
-  const tempDir = path.join(__dirname, `temp/${filePath}`);
-
-  const a = filePath.split('/');
-
-  let paths = '';
-
-  for (let i = 0; i < a.length; i++) {
-    // Add each word to the sentence
-    paths += a[i];
-    const tempDir = path.join(__dirname, `temp/${paths}`);
-    if (!fs.existsSync(tempDir)) {
-      console.log('none');
-      fs.mkdirSync(tempDir);
-    }
-
-    // Add a space after each word except the last one
-    if (i < a.length - 1) {
-      paths += '/';
-    }
-  }
+  const tempDir = path.join(__dirname, 'temp');
 
   return new Promise((resolve, reject) => {
     ffmpeg(inputPath)
@@ -84,15 +65,15 @@ export const convertToHLSAndUpload = async (
         '-hls_time 2',
         '-hls_list_size 0',
         '-hls_fmp4_init_filename',
-        path.join(`utils/temp/${filePath}`, `${filename}-%v-init.m4s`),
+        path.join(tempDir, `${filename}-%v-init.m4s`),
         '-hls_segment_filename',
-        path.join(`utils/temp/${filePath}`, `${filename}-%v-%03d.m4s`),
+        path.join(tempDir, `${filename}-%v-%03d.m4s`),
         `-master_pl_name ${filename}.m3u8`,
         '-var_stream_map',
         'a:0,agroup:a128,name:audio-128k v:0,agroup:a128,name:720p-4M v:1,agroup:a128,name:480p-2M v:2,agroup:a128,name:240p-500k',
       ])
 
-      .output(path.join(`utils/temp/${filePath}`, `${filename}-%v.m3u8`)) // Output playlist file
+      .output(path.join(tempDir, `${filename}-%v.m3u8`)) // Output playlist file
       .on('start', (commandLine) => {
         console.log('Spawned FFmpeg with command:', commandLine);
       })
@@ -124,7 +105,7 @@ export const convertToHLSAndUpload = async (
             b++;
             await uploadFileToFirebase(
               path.join(tempDir, segment),
-              `${filePath}/temp/${segment}`
+              `asd/temp/${segment}`
             );
           }
 
@@ -137,7 +118,7 @@ export const convertToHLSAndUpload = async (
             b++;
             await uploadFileToFirebase(
               path.join(tempDir, segment),
-              `${filePath}/${segment}`
+              `asd/asd/${segment}`
             );
           }
 
@@ -151,7 +132,7 @@ export const convertToHLSAndUpload = async (
             b++;
             await uploadFileToFirebase(
               path.join(tempDir, segment),
-              `${filePath}/${segment}`
+              `asd/asd/${segment}`
             );
           }
 
