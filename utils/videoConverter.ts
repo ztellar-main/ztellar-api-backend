@@ -60,7 +60,6 @@ export const convertToHLSAndUpload = async (
   return new Promise((resolve, reject) => {
     ffmpeg(inputPath)
       .outputOptions([
-        // Use AMD hardware-accelerated H.264 codec
         '-preset ultrafast',
         '-filter_complex',
         '[0:v]fps=30,split=3[720_in][480_in][240_in];[720_in]scale=-2:720[720_out];[480_in]scale=-2:480[480_out];[240_in]scale=-2:240[240_out]',
