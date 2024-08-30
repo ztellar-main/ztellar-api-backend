@@ -59,7 +59,6 @@ export const convertToHLSAndUpload = async (
 
   return new Promise((resolve, reject) => {
     ffmpeg(inputPath)
-      .videoCodec('h264_amf')
       .outputOptions([
         // Use AMD hardware-accelerated H.264 codec
         '-preset ultrafast',
