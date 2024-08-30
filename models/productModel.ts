@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
-import Subject from "./subjectModel";
-import Video from "./videoModel";
-import Feedback from "./feedbackModel";
+import mongoose from 'mongoose';
+import Subject from './subjectModel';
+import Video from './videoModel';
+import Feedback from './feedbackModel';
 
 const productSchema = new mongoose.Schema(
   {
@@ -16,7 +16,7 @@ const productSchema = new mongoose.Schema(
     ],
     author_id: {
       type: mongoose.Schema.ObjectId,
-      ref: "User",
+      ref: 'User',
     },
     liveId: String,
     place: String,
@@ -31,13 +31,13 @@ const productSchema = new mongoose.Schema(
       {
         _id: {
           type: mongoose.Schema.ObjectId,
-          ref: "Subject",
+          ref: 'Subject',
         },
         videos: [
           {
             _id: {
               type: mongoose.Schema.ObjectId,
-              ref: "Video",
+              ref: 'Video',
             },
           },
         ],
@@ -47,7 +47,7 @@ const productSchema = new mongoose.Schema(
       {
         _id: {
           type: mongoose.Schema.ObjectId,
-          ref: "User",
+          ref: 'User',
         },
         qr_code: String,
         reg_type: String,
@@ -61,7 +61,7 @@ const productSchema = new mongoose.Schema(
     feedback: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: "Feedback",
+        ref: 'Feedback',
       },
     ],
     feedback_count: {
@@ -99,21 +99,19 @@ const productSchema = new mongoose.Schema(
       },
     ],
     // COURSE
-    course_price: {
-      price_description: String,
-      price_value: Number,
-    },
+    course_price: Number,
+    converted_video_intro: String,
     course_subjects: [
       {
         _id: {
           type: mongoose.Schema.ObjectId,
-          ref: "CourseSubject",
+          ref: 'CourseSubject',
         },
         video: [
           {
             _id: {
               type: mongoose.Schema.ObjectId,
-              ref: "CourseVideo",
+              ref: 'CourseVideo',
             },
           },
         ],
@@ -176,7 +174,7 @@ const productSchema = new mongoose.Schema(
         boot_list: [
           {
             boot_number: String,
-            status:String,
+            status: String,
             reserved_by: String,
             sold_to: String,
             prices: [
@@ -194,6 +192,6 @@ const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Product = mongoose.model("Product", productSchema);
+const Product = mongoose.model('Product', productSchema);
 
 export default Product;

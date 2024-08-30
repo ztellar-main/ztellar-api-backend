@@ -65,7 +65,6 @@ export const createEventFeedback = tryCatch(
       { _id: productId },
       { $set: { average_rating: ratings_average } }
     );
-
     res.status(201).json("Leave review success");
   }
 );
