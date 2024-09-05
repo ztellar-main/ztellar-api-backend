@@ -187,6 +187,11 @@ const productSchema = new mongoose.Schema(
         ],
       },
     ],
+    activate: {
+      type: Boolean,
+      default: false,
+    },
+    image_path: String,
   },
 
   { timestamps: true }
