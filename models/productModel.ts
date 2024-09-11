@@ -103,15 +103,15 @@ const productSchema = new mongoose.Schema(
     converted_video_intro: String,
     course_subjects: [
       {
-        _id: {
+        data: {
           type: mongoose.Schema.ObjectId,
           ref: 'CourseSubject',
         },
-        video: [
+        videos: [
           {
-            _id: {
+            data: {
               type: mongoose.Schema.ObjectId,
-              ref: 'CourseVideo',
+              ref: 'Video',
             },
           },
         ],

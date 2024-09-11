@@ -5,6 +5,7 @@ import AppError from '../utils/AppError';
 import { ERROR_HANDLER } from '../constants/errorCodes';
 import mongoose from 'mongoose';
 import CourseSubject from '../models/courseSubjectModel';
+import Video from '../models/videoModel';
 
 export interface IGetUserAuthInfoRequest extends Request {
   user: any; // or any other type
@@ -128,7 +129,8 @@ export const getSingleCourseAdmin = tryCatch(
       .select(
         '-registered -prices -attendance -subjects -quiz -certificate -questions -sponsors_logo -sponsors_post -sponsors_videos -sponsors_boot'
       )
-      .populate({ path: 'course_subjects._id' });
+      .populate({ path: 'course_subjects.data' })
+      .populate({ path: 'course_subjects.videos.data' });
     res.status(200).json(courses);
   }
 );
@@ -213,12 +215,219 @@ export const addSubjectOnCourse = tryCatch(
 
     const updatedCourse = await Product.findOneAndUpdate(
       { _id: courseId },
-      { $push: { course_subjects: { _id: newSubject?._id } } },
+      { $push: { course_subjects: { data: newSubject?._id } } },
       {
         new: true,
       }
     );
 
     res.json(updatedCourse);
+  }
+);
+
+// check if video title already exists
+export const checkIfVideoTitleAlreadyExist = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { title, subjectId, courseId } = req.body;
+
+    const video = await Video.findOne({
+      title,
+      subject_id: subjectId,
+      product_id: courseId,
+    });
+
+    if (video) {
+      throw new AppError(
+        ERROR_HANDLER,
+        'This video title is already exists on this subject',
+        400
+      );
+    }
+
+    res.status(200).json('success');
+  }
+);
+
+// add video to subject
+export const addVideoToSubject = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { title, courseId, subjectId } = req.body;
+
+    const newVideo = await Video.create({
+      title,
+      product_id: courseId,
+      subject_id: subjectId,
+    });
+
+    const videoUrlConverted = `course/${courseId}/${subjectId}/${newVideo._id}/adaptive.m3u8`;
+
+    await Video.findOneAndUpdate(
+      { _id: newVideo._id },
+      {
+        $set: { video_url_converted: videoUrlConverted },
+      }
+    );
+
+    await Product.findOneAndUpdate(
+      { _id: courseId },
+      { $push: { 'course_subjects.$[e1].videos': { data: newVideo?._id } } },
+      {
+        arrayFilters: [{ 'e1.data': subjectId }],
+      }
+    );
+
+    res.status(201).json('success');
+  }
+);
+
+// edit subject order
+export const editSubjectOrder = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { data, courseId } = req.body;
+
+    const updatedCourse = await Product.findOneAndUpdate(
+      { _id: courseId },
+      { $set: { course_subjects: data } },
+      { new: true }
+    );
+
+    res.status(200).json(updatedCourse);
+  }
+);
+
+// check if subjectTitle already exist
+export const checkIfTitleAlreadyExist = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { courseId, title } = req.body;
+
+    const subject = await CourseSubject.findOne({ course_id: courseId, title });
+
+    if (subject) {
+      throw new AppError(
+        ERROR_HANDLER,
+        'This subject title already exist in this course',
+        400
+      );
+    }
+
+    res.json('success');
+  }
+);
+
+// update subject title
+export const updateCourseSubjectTitle = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { title, subjectId } = req.body;
+
+    await CourseSubject.findOneAndUpdate(
+      { _id: subjectId },
+      {
+        $set: { title: title },
+      },
+      { new: true }
+    );
+
+    res.status(200).json('success');
+  }
+);
+
+// check video title if already exists
+export const checkVideoTitleIfexists = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { subjectId, title } = req.body;
+
+    const video = await Video.findOne({ subject_id: subjectId, title });
+
+    if (video) {
+      throw new AppError(
+        ERROR_HANDLER,
+        'This video title already exist in this subject',
+        400
+      );
+    }
+
+    res.status(200).json('success');
+  }
+);
+
+// edit subject video title
+export const editSubjectVideoTitle = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { videoId, title } = req.body;
+
+    await Video.findOneAndUpdate(
+      { _id: videoId },
+      {
+        $set: { title: title },
+      }
+    );
+
+    res.status(200).json('success');
+  }
+);
+
+// get subject videos
+export const getSubjectVideos = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { courseId, subjectId } = req.query;
+    if (!courseId || !subjectId) {
+      throw new AppError(
+        ERROR_HANDLER,
+        'Something went wrong please try again',
+        400
+      );
+    }
+
+    const course = await Product.findOne({
+      _id: courseId,
+    }).populate({ path: 'course_subjects.videos.data' });
+
+    const videos = course.course_subjects.filter((data: any) => {
+      const asd = data._id.toString();
+      return asd === subjectId;
+    });
+
+    res.status(200).json(videos[0]);
+  }
+);
+
+// udpate subject videos order
+export const updateSubjectVideosOrder = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { courseId, subjectId, data } = req.body;
+
+    if (!courseId || !subjectId || !data) {
+      throw new AppError(
+        ERROR_HANDLER,
+        'Something went wrong please try again',
+        400
+      );
+    }
+
+    await Product.findOneAndUpdate(
+      { _id: courseId },
+      {
+        $set: { 'course_subjects.$[e1].videos': data },
+      },
+      { arrayFilters: [{ 'e1._id': subjectId }] }
+    );
+
+    res.status(200).json('success');
+  }
+);
+
+// activate or deactivate video
+export const activateOrDeactivateVideo = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { videoId, videoState } = req.body;
+    const newVideoState = !videoState;
+
+    const updatedVideo = await Video.findByIdAndUpdate(
+      { _id: videoId },
+      { $set: { status: newVideoState } },
+      { new: true } // This returns the updated document
+    );
+
+    res.status(200).json('success');
   }
 );

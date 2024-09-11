@@ -195,7 +195,6 @@ export const addVideoToEventSubject = tryCatch(
     res.status(201).json(addVideoToSubject);
   }
 );
-
 // GET PRODUCT SEARCH CARD
 export const getProductSearchCard = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
