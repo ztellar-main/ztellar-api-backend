@@ -65,7 +65,7 @@ import User from './models/userModel';
 import privateVideoRoutes from './routes/privateVideoRoutes';
 import authorRoutes from './routes/authorRoutes';
 import courseRoutes from './routes/courseRoutes';
-import convertVideoRoutes from './routes/convertVideoRoutes';
+import videoRoutes from './routes/videoRoutes';
 
 app.use('/api/users', userRoutes);
 app.use('/api/product', productRouter);
@@ -75,7 +75,7 @@ app.use('/api/feedback', feedbackRoutes);
 app.use('/api/private-video', privateVideoRoutes);
 app.use('/api/author', authorRoutes);
 app.use('/api/course', courseRoutes);
-app.use('/api/video', convertVideoRoutes);
+app.use('/api/video', videoRoutes);
 
 // error handler
 app.use(errorHandler);
