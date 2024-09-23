@@ -1,8 +1,9 @@
-import AppError from "./AppError";
-import { Response } from "express";
-import bcrypt from "bcryptjs";
-import Otp from "../models/otpModel";
-import nodemailer from "nodemailer";
+import AppError from './AppError';
+import { Response } from 'express';
+import bcrypt from 'bcryptjs';
+import Otp from '../models/otpModel';
+import nodemailer from 'nodemailer';
+import { template } from './htmlOtpTemplate';
 
 export const sendOtp = async (email: string) => {
   const otp = `${Math.floor(1000 + Math.random() * 9000)}`;
@@ -11,22 +12,22 @@ export const sendOtp = async (email: string) => {
   const otpUser = await Otp.findOne({ email });
 
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
+    host: 'smtp.gmail.com',
     port: 465,
     secure: true,
     auth: {
-      user: "Zstellar01@gmail.com",
-      pass: "tibu ezep snnq cynr",
+      user: 'Zstellar01@gmail.com',
+      pass: 'tibu ezep snnq cynr',
     },
   });
 
   async function main() {
     const info = await transporter.sendMail({
-      from: "<Zstellar01@gmail.com>", // sender address
+      from: '<Zstellar01@gmail.com>', // sender address
       to: `${email}`, // list of receivers
-      subject: "Ztellar - verify your email", // Subject line
+      subject: 'Ztellar - verify your email', // Subject line
       // text: `${otp}`, // plain text body
-      html: `${otp}`, // html body
+      html: `${template(otp)}`, // html body
     });
     return true;
   }
@@ -56,7 +57,7 @@ export const sendOtp = async (email: string) => {
         return true;
       }
     } catch (err) {
-      console.log("Something went wrong saving your otp.");
+      console.log('Something went wrong saving your otp.');
     }
   }
 };

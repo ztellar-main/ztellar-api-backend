@@ -21,6 +21,8 @@ import {
   getSubjectVideos,
   updateSubjectVideosOrder,
   activateOrDeactivateVideo,
+  getCoursePublic,
+  getAcquiredCourse,
 } from '../controllers/courseController';
 
 import { protect } from '../utils/protect';
@@ -55,7 +57,12 @@ router.put('/edit-subject-video-title', editSubjectVideoTitle);
 router.get('/get-subject-videos', getSubjectVideos);
 router.put('/update-subject-videos-order', updateSubjectVideosOrder);
 router.put('/activate-or-deactivate-video', activateOrDeactivateVideo);
-
 // ADMIN END
+
+// PUBLIC
+router.get('/get-single-course-public', getCoursePublic);
+
+// ACQUIRED COURSE
+router.get('/acquired-course',protect, getAcquiredCourse);
 
 export default router;

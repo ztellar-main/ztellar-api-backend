@@ -6,6 +6,7 @@ import { ERROR_HANDLER } from '../constants/errorCodes';
 import mongoose from 'mongoose';
 import CourseSubject from '../models/courseSubjectModel';
 import Video from '../models/videoModel';
+import User from '../models/userModel';
 
 export interface IGetUserAuthInfoRequest extends Request {
   user: any; // or any other type
@@ -429,5 +430,88 @@ export const activateOrDeactivateVideo = tryCatch(
     );
 
     res.status(200).json('success');
+  }
+);
+
+// get course single public
+export const getCoursePublic = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { id, uid } = req.query;
+
+    const course = await Product.findOne({ _id: id })
+      .select(
+        'converted_video_intro title description course_price average_rating feedback feedback_count course_subjects author_id registered'
+      )
+      .populate({ path: 'course_subjects.data', select: 'title' })
+      .populate({ path: 'course_subjects.videos.data', select: 'title' })
+      .populate({ path: 'author_id', select: 'avatar fname lname' });
+
+    if (!course) {
+      throw new AppError(
+        ERROR_HANDLER,
+        'Something went wrong please try again',
+        400
+      );
+    }
+
+    // if user is already registered
+    const registeredFilter = course.registered.filter((data) => {
+      let stringId: any = data._id.toString();
+      return (stringId = uid);
+    });
+
+    const registeredFilterLength = registeredFilter.length;
+
+    let registered = false;
+
+    if (registeredFilterLength > 0) {
+      registered = true;
+    }
+
+    res.status(200).json({ data: course, registered });
+  }
+);
+
+// get acquired course
+export const getAcquiredCourse = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const userId = req.user;
+    const { id } = req.query;
+
+    const courseId = await Product.findOne({ _id: id })
+      .select(
+        'course_subjects title description author_id average_rating feedback createdAt'
+      )
+      .populate({ path: 'course_subjects.data', select: 'title' })
+      .populate({
+        path: 'course_subjects.videos.data',
+        select: 'title video_url_converted',
+      });
+
+    if (!courseId) {
+      throw new AppError(
+        ERROR_HANDLER,
+        'Something went wrong please try again',
+        400
+      );
+    }
+
+    const user = await User.findOne({ _id: userId });
+
+    const userFilter = user.product_owned.filter((data) => {
+      return (data._id = courseId._id);
+    });
+
+    const userFilterLength = userFilter.length;
+
+    if (userFilterLength === 0) {
+      throw new AppError(
+        ERROR_HANDLER,
+        'Something went wrong please try again',
+        400
+      );
+    }
+
+    res.status(200).json(courseId);
   }
 );
