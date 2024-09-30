@@ -301,8 +301,10 @@ export const getUserOwnedEvent = tryCatch(
     const findEvent = userOwnedEvent.product_owned.find((e: any) => {
       // console.log(e.id = id);
       const aid = new mongoose.Types.ObjectId(id.toString());
-      return (e._id._id = aid);
+      return e._id._id === aid;
     });
+
+    console.log(findEvent);
 
     if (!findEvent) {
       throw new AppError(SOMETHING_WENT_WRONG, 'Invalid id.', 400);
