@@ -301,8 +301,10 @@ export const getUserOwnedEvent = tryCatch(
     const findEvent = userOwnedEvent.product_owned.find((e: any) => {
       // console.log(e.id = id);
       // console.log(e._id._id);
-      const aid = new mongoose.Types.ObjectId(id.toString());
-      return (e._id._id = aid);
+      // const aid = new mongoose.Types.ObjectId(id.toString());
+      // console.log(e._id._id.toString());
+      const ownedId = e._id._id.toString()
+      return (ownedId === id);
     });
 
     console.log(findEvent);
