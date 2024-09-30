@@ -296,7 +296,7 @@ export const getUserOwnedEvent = tryCatch(
 
     const findEvent = userOwnedEvent.product_owned.filter((e: any) => {
       const ownedId = e._id._id.toString();
-      return ownedId === id;
+      return ownedId === id.toString();
     });
 
     if (!findEvent) {
