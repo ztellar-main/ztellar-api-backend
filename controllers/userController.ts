@@ -268,7 +268,7 @@ export const getUserOwnedEvent = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
     const userId = req.user;
     const { id } = req.query;
-    console.log(id);
+    console.log({ courseId: id });
 
     const validate = isValidObjectId(id);
 
@@ -299,7 +299,6 @@ export const getUserOwnedEvent = tryCatch(
       console.log(ownedId);
       return ownedId === id.toString();
     });
-    console.log(findEvent);
 
     if (!findEvent) {
       throw new AppError(SOMETHING_WENT_WRONG, 'Invalid id.', 400);
