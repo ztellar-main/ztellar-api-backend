@@ -294,17 +294,18 @@ export const getUserOwnedEvent = tryCatch(
       throw new AppError(SOMETHING_WENT_WRONG, 'Invalid id.', 400);
     }
 
-    const findEvent = userOwnedEvent.product_owned.filter((e: any) => {
-      const ownedId = e._id.toString();
-      console.log(ownedId);
+    const findEvent = await userOwnedEvent.product_owned.filter((e: any) => {
+      const ownedId = e?._id?._id.toString();
       return ownedId === id.toString();
     });
+
+    console.log(findEvent);
 
     if (!findEvent) {
       throw new AppError(SOMETHING_WENT_WRONG, 'Invalid id.', 400);
     }
 
-    res.status(200).json({ eventData: findEvent, userData: user });
+    res.status(200).json({ eventData: findEvent[0], userData: user });
   }
 );
 
