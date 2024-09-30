@@ -271,8 +271,6 @@ export const getUserOwnedEvent = tryCatch(
 
     const validate = isValidObjectId(id);
 
-    console.log(id);
-
     if (!validate) {
       throw new AppError(SOMETHING_WENT_WRONG, 'Invalid id.', 400);
     }
@@ -302,7 +300,8 @@ export const getUserOwnedEvent = tryCatch(
 
     const findEvent = userOwnedEvent.product_owned.find((e: any) => {
       // console.log(e.id = id);
-      return e._id._id == id;
+
+      return (e._id._id = id);
     });
 
     if (!findEvent) {
