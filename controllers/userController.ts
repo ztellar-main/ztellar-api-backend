@@ -295,7 +295,7 @@ export const getUserOwnedEvent = tryCatch(
     }
 
     const findEvent = userOwnedEvent.product_owned.filter((e: any) => {
-      const ownedId = e._id._id.toString();
+      const ownedId = e._id.toString();
       console.log(ownedId);
       return ownedId === id.toString();
     });
@@ -304,7 +304,7 @@ export const getUserOwnedEvent = tryCatch(
       throw new AppError(SOMETHING_WENT_WRONG, 'Invalid id.', 400);
     }
 
-    res.status(200).json({ eventData: findEvent[0], userData: user });
+    res.status(200).json({ eventData: findEvent, userData: user });
   }
 );
 
