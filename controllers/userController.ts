@@ -268,6 +268,7 @@ export const getUserOwnedEvent = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
     const userId = req.user;
     const { id } = req.query;
+    console.log(id);
 
     const validate = isValidObjectId(id);
 
@@ -277,11 +278,6 @@ export const getUserOwnedEvent = tryCatch(
 
     const userOwnedEvent = await User.findOne({
       _id: userId,
-      product_owned: {
-        $elemMatch: {
-          _id: id,
-        },
-      },
     })
       .select('product_owned')
       .populate({
@@ -298,16 +294,10 @@ export const getUserOwnedEvent = tryCatch(
       throw new AppError(SOMETHING_WENT_WRONG, 'Invalid id.', 400);
     }
 
-    const findEvent = userOwnedEvent.product_owned.find((e: any) => {
-      // console.log(e.id = id);
-      // console.log(e._id._id);
-      // const aid = new mongoose.Types.ObjectId(id.toString());
-      // console.log(e._id._id.toString());
-      const ownedId = e._id._id.toString()
-      return (ownedId === id);
+    const findEvent = userOwnedEvent.product_owned.filter((e: any) => {
+      const ownedId = e._id._id.toString();
+      return ownedId === id;
     });
-
-    console.log(findEvent);
 
     if (!findEvent) {
       throw new AppError(SOMETHING_WENT_WRONG, 'Invalid id.', 400);
