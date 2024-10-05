@@ -21,6 +21,8 @@ import {
   addSponsorLogoToEvent,
   addSponsorPostOnEventView,
   certificateUpdate,
+  addDownloadableForms,
+  saveBoot,
 } from '../controllers/productController';
 
 import { protect } from '../utils/protect';
@@ -49,5 +51,9 @@ router.put('/save-event-sponsor-logo', addSponsorLogoToEvent);
 router.put('/save-event-sponsor-post', addSponsorPostOnEventView);
 // UDPATE CERTIFICATE
 router.put('/update-cert', certificateUpdate);
+// update downloadable forms
+router.put('/update-downloadable-forms', addDownloadableForms);
+
+router.put('/save-sponsors-boot', saveBoot);
 
 export default router;

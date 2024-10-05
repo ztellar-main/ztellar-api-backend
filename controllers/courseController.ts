@@ -7,6 +7,8 @@ import mongoose from 'mongoose';
 import CourseSubject from '../models/courseSubjectModel';
 import Video from '../models/videoModel';
 import User from '../models/userModel';
+import Question from '../models/questionModel';
+import Answer from '../models/answerModel';
 
 export interface IGetUserAuthInfoRequest extends Request {
   user: any; // or any other type
@@ -486,7 +488,8 @@ export const getAcquiredCourse = tryCatch(
       .populate({
         path: 'course_subjects.videos.data',
         select: 'title video_url_converted',
-      });
+      })
+      .populate({ path: 'course_subjects.questions', select: '-answer' });
 
     if (!courseId) {
       throw new AppError(
@@ -513,5 +516,111 @@ export const getAcquiredCourse = tryCatch(
     }
 
     res.status(200).json(courseId);
+  }
+);
+
+// setup subject questionnaire
+export const setupSubjectQuestionnaire = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { courseId, subjectId, questions } = req.body;
+    // console.log({ courseId, subjectId, questions });
+
+    const newQuestion = await Question.create({ questions });
+
+    const updatedCourse = await Product.findOneAndUpdate(
+      { _id: courseId },
+      {
+        $set: { 'course_subjects.$[e1].questions': newQuestion._id },
+      },
+      { arrayFilters: [{ 'e1._id': subjectId }] }
+    );
+
+    res.status(201).json({ updatedCourse });
+  }
+);
+
+// get subject question
+export const getSubjectQuestions = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { subjectId, courseId } = req.query;
+
+    const product = await Product.findOne({ _id: courseId })
+      .populate({
+        path: 'course_subjects',
+      })
+      .populate({ path: 'course_subjects.questions' });
+
+    console.log(product);
+
+    const subjectQuestionFilter = product.course_subjects.filter(
+      (data: any) => {
+        const dataId = data._id.toString();
+        return dataId === subjectId;
+      }
+    );
+    res.status(200).json(subjectQuestionFilter[0].questions);
+  }
+);
+
+// update subject question
+export const updateSubjectQuestion = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { id, questions } = req.body;
+
+    console.log(questions);
+
+    const udpatedQuestion = await Question.findOneAndUpdate(
+      { _id: id },
+      {
+        $set: { questions: questions },
+      },
+      { new: true }
+    );
+
+    res.json(udpatedQuestion);
+  }
+);
+
+// get course subject answer
+export const getCourseSubjectAnswer = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const userId = req.user;
+    const { courseId, subjectId } = req.query;
+
+    console.log({ courseId, subjectId, userId });
+
+    if (
+      !courseId ||
+      !subjectId ||
+      !userId ||
+      subjectId === '' ||
+      subjectId === 'undefined'
+    ) {
+      return res.status(200).json('no');
+    } else {
+      const answer = await Answer.findOne({
+        course_id: courseId,
+        subject_id: subjectId,
+        user_id: userId,
+      });
+
+      return res.json(answer);
+    }
+  }
+);
+
+// create answer
+export const createAnswer = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const userId = req.user;
+    const { courseId, subjectId } = req.body;
+
+    const newAnswer = await Answer.create({
+      course_id: courseId,
+      subject_id: subjectId,
+      user_id: userId,
+    });
+
+    res.status(201).json(newAnswer);
   }
 );

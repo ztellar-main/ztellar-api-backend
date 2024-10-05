@@ -612,3 +612,90 @@ export const certificateUpdate = tryCatch(
     res.status(201).json(updatedProduct);
   }
 );
+
+// add downloadable forms
+export const addDownloadableForms = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const data = [
+      {
+        url: 'https://firebasestorage.googleapis.com/v0/b/ztellar-11a4f.appspot.com/o/event-downloadable-forms%2FAction-Sheet-Editable.pdf?alt=media&token=217313ef-50bb-4b1b-95d1-ecb62c00fee6',
+        title: 'Action-Sheet-Editable',
+      },
+      {
+        url: 'https://firebasestorage.googleapis.com/v0/b/ztellar-11a4f.appspot.com/o/event-downloadable-forms%2FAffidavit-of-PME-Candidate.pdf?alt=media&token=f94e2ba5-cde9-406e-ac5c-1f57ad94cee5',
+        title: 'Affidavit-of-PME-Candidate',
+      },
+      {
+        url: 'https://firebasestorage.googleapis.com/v0/b/ztellar-11a4f.appspot.com/o/event-downloadable-forms%2FApplication-Form-Editable.pdf?alt=media&token=4770fa20-fffd-4772-bdee-6398589baa14',
+        title: 'Application-Form-Editable',
+      },
+      {
+        url: 'https://firebasestorage.googleapis.com/v0/b/ztellar-11a4f.appspot.com/o/event-downloadable-forms%2FEquipments-Handled-Sample.pdf?alt=media&token=59cec17a-f4f1-4ad5-85fc-236065749fa7',
+        title: 'Equipments-Handled-Sample',
+      },
+      {
+        url: 'https://firebasestorage.googleapis.com/v0/b/ztellar-11a4f.appspot.com/o/event-downloadable-forms%2FList-of-Design-Sample.pdf?alt=media&token=1d689bba-eed9-40ed-8000-2eba080ac5ef',
+        title: 'List-of-Design-Sample',
+      },
+      {
+        url: 'https://firebasestorage.googleapis.com/v0/b/ztellar-11a4f.appspot.com/o/event-downloadable-forms%2FSample-Engg-Report-Topic.pdf?alt=media&token=95de2551-141b-4ecc-89ae-cd76e38aac5c',
+        title: 'Sample-Engg-Report-Topic',
+      },
+      {
+        url: 'https://firebasestorage.googleapis.com/v0/b/ztellar-11a4f.appspot.com/o/event-downloadable-forms%2FTOS-Technical-Evaluation-PME-2023.pdf?alt=media&token=be962944-dc5d-47f1-9b59-c50af2ed22c7',
+        title: 'TOS-Technical-Evaluation-PME-2023',
+      },
+    ];
+
+    const newForm = await Product.findOneAndUpdate(
+      {
+        _id: '66c88798c99f1b2968a02f67',
+      },
+      {
+        $set: { download_forms: data },
+      },
+      {
+        new: true,
+      }
+    );
+
+    res.status(201).json(newForm);
+  }
+);
+
+export const saveBoot = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const data = [
+      {
+        image_url:
+          'https://firebasestorage.googleapis.com/v0/b/ztellar-11a4f.appspot.com/o/event-downloadable-forms%2Fimgpsh_fullsize_anim%20(2).jpg?alt=media&token=886bea27-e00e-46b9-803e-1045af17a856',
+        boot_list: [
+          // {
+          //   boot_number: String,
+          //   status: String,
+          //   reserved_by: String,
+          //   sold_to: String,
+          //   prices: [
+          //     {
+          //       price_name: String,
+          //       price: Number,
+          //     },
+          //   ],
+          // },
+        ],
+      },
+    ];
+
+    const updatedProduct = await Product.findOneAndUpdate(
+      {
+        _id: '66d6cea6b48e256d047b6746',
+      },
+      {
+        $set: { sponsors_boot: data },
+      },
+      { new: true }
+    );
+
+    res.status(201).json(updatedProduct);
+  }
+);

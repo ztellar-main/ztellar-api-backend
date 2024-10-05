@@ -115,6 +115,7 @@ const productSchema = new mongoose.Schema(
             },
           },
         ],
+        questions: { type: mongoose.Schema.ObjectId, ref: 'Question' },
       },
     ],
     date_start: Date,
@@ -170,7 +171,7 @@ const productSchema = new mongoose.Schema(
         boot_legend: String,
         boor_message: String,
         file_letter_url: String,
-
+        image_url: String,
         boot_list: [
           {
             boot_number: String,
@@ -192,6 +193,12 @@ const productSchema = new mongoose.Schema(
       default: false,
     },
     image_path: String,
+    download_forms: [
+      {
+        url: String,
+        title: String,
+      },
+    ],
   },
 
   { timestamps: true }

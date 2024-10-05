@@ -23,6 +23,11 @@ import {
   activateOrDeactivateVideo,
   getCoursePublic,
   getAcquiredCourse,
+  setupSubjectQuestionnaire,
+  getSubjectQuestions,
+  updateSubjectQuestion,
+  getCourseSubjectAnswer,
+  createAnswer,
 } from '../controllers/courseController';
 
 import { protect } from '../utils/protect';
@@ -57,12 +62,18 @@ router.put('/edit-subject-video-title', editSubjectVideoTitle);
 router.get('/get-subject-videos', getSubjectVideos);
 router.put('/update-subject-videos-order', updateSubjectVideosOrder);
 router.put('/activate-or-deactivate-video', activateOrDeactivateVideo);
+router.put('/save-subject-questionnaire', setupSubjectQuestionnaire);
+router.get('/get-subject-questions', getSubjectQuestions);
+router.put('/update-subject-questions', updateSubjectQuestion);
+
 // ADMIN END
 
 // PUBLIC
 router.get('/get-single-course-public', getCoursePublic);
 
 // ACQUIRED COURSE
-router.get('/acquired-course',protect, getAcquiredCourse);
+router.get('/acquired-course', protect, getAcquiredCourse);
+router.get('/get-course-subject-answer', protect, getCourseSubjectAnswer);
+router.post('/create-subject-answer', protect, createAnswer);
 
 export default router;
