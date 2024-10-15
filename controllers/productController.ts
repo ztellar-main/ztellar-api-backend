@@ -326,45 +326,13 @@ export const updateLinks = tryCatch(async (req: Request, res: Response) => {
 // ADD QUESTION
 export const updateQuestionToEvent = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
-    const productId = "6688de27a366e5146109d850";
-    const asd = [
-      {
-        question: "1. This is question",
-        choices: [
-          {
-            label: "c",
-            description: "This is a sample description",
-          },
-          {
-            label: "b",
-            description: "This is a sample description",
-          },
-          {
-            label: "d",
-            description: "This is a sample description",
-          },
-        ],
-        answer: "c",
-      },
-      {
-        question: "2. This is question",
-        choices: [
-          {
-            label: "d",
-            description: "This is a sample description",
-          },
-          {
-            label: "e",
-            description: "This is a sample description",
-          },
-        ],
-        answer: "d",
-      },
-    ];
+    const {id,asd} = req.body;
+
+ 
 
     const udpated = await Product.findOneAndUpdate(
       {
-        _id: productId,
+        _id: id,
       },
       {
         $set: { questions: asd },
