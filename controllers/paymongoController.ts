@@ -279,7 +279,7 @@ export const attachPaymentIntent = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
     const { paymentMethodId, paymentIntentId, clientKey } = req.body;
 
-    const redirectUrl = `https://ztellar-api-backend.onrender.com/process-payment?mid=${paymentMethodId}&cid=${clientKey}&pid=${paymentIntentId}`;
+    const redirectUrl = `https://ztellar.tech/process-payment?mid=${paymentMethodId}&cid=${clientKey}&pid=${paymentIntentId}`;
 
     const axios = require('axios');
 
