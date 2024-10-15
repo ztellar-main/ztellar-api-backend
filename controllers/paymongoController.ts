@@ -367,8 +367,9 @@ export const retrievePaymentIntent = tryCatch(
       // if course already exist on user
       const user = await User.findOne({ _id: userId });
 
-      const productOwned = user.product_owned.filter((data) => {
-        return (data._id = courseId);
+      const productOwned = user.product_owned.filter((data: any) => {
+        const idString = data._id.toString();
+        return idString === courseId;
       });
 
       const productOwnedLength = productOwned.length;
