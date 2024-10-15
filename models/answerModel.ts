@@ -22,7 +22,7 @@ const answerSchema = new mongoose.Schema({
   },
   passing_score: {
     type: Number,
-    default: 2,
+    default: 7,
   },
   passed: { type: Boolean, default: false },
   time_expired: Date,
