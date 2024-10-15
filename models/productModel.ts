@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
-import Subject from "./subjectModel";
-import Video from "./videoModel";
-import Feedback from "./feedbackModel";
+import mongoose from 'mongoose';
+import Subject from './subjectModel';
+import Video from './videoModel';
+import Feedback from './feedbackModel';
 
 const productSchema = new mongoose.Schema(
   {
@@ -16,7 +16,7 @@ const productSchema = new mongoose.Schema(
     ],
     author_id: {
       type: mongoose.Schema.ObjectId,
-      ref: "User",
+      ref: 'User',
     },
     liveId: String,
     place: String,
@@ -31,13 +31,13 @@ const productSchema = new mongoose.Schema(
       {
         _id: {
           type: mongoose.Schema.ObjectId,
-          ref: "Subject",
+          ref: 'Subject',
         },
         videos: [
           {
             _id: {
               type: mongoose.Schema.ObjectId,
-              ref: "Video",
+              ref: 'Video',
             },
           },
         ],
@@ -47,7 +47,7 @@ const productSchema = new mongoose.Schema(
       {
         _id: {
           type: mongoose.Schema.ObjectId,
-          ref: "User",
+          ref: 'User',
         },
         qr_code: String,
         reg_type: String,
@@ -61,7 +61,7 @@ const productSchema = new mongoose.Schema(
     feedback: [
       {
         type: mongoose.Schema.ObjectId,
-        ref: "Feedback",
+        ref: 'Feedback',
       },
     ],
     feedback_count: {
@@ -99,24 +99,23 @@ const productSchema = new mongoose.Schema(
       },
     ],
     // COURSE
-    course_price: {
-      price_description: String,
-      price_value: Number,
-    },
+    course_price: Number,
+    converted_video_intro: String,
     course_subjects: [
       {
-        _id: {
+        data: {
           type: mongoose.Schema.ObjectId,
-          ref: "CourseSubject",
+          ref: 'CourseSubject',
         },
-        video: [
+        videos: [
           {
-            _id: {
+            data: {
               type: mongoose.Schema.ObjectId,
-              ref: "CourseVideo",
+              ref: 'Video',
             },
           },
         ],
+        questions: { type: mongoose.Schema.ObjectId, ref: 'Question' },
       },
     ],
     date_start: Date,
@@ -137,10 +136,74 @@ const productSchema = new mongoose.Schema(
         },
       },
     ],
+    sponsors_logo: [
+      {
+        sponsors_name: String,
+        url: String,
+      },
+    ],
+    sponsors_post: [
+      {
+        name: String,
+        logo: String,
+        post_data: [
+          {
+            url: String,
+            file_type: String,
+          },
+        ],
+      },
+    ],
+    sponsors_videos: [
+      {
+        name: String,
+        logo: String,
+        post_data: [
+          {
+            url: String,
+            file_type: String,
+          },
+        ],
+      },
+    ],
+    sponsors_boot: [
+      {
+        boot_legend: String,
+        boor_message: String,
+        file_letter_url: String,
+        image_url: String,
+        boot_list: [
+          {
+            boot_number: String,
+            status: String,
+            reserved_by: String,
+            sold_to: String,
+            prices: [
+              {
+                price_name: String,
+                price: Number,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    activate: {
+      type: Boolean,
+      default: false,
+    },
+    image_path: String,
+    download_forms: [
+      {
+        url: String,
+        title: String,
+      },
+    ],
   },
+
   { timestamps: true }
 );
 
-const Product = mongoose.model("Product", productSchema);
+const Product = mongoose.model('Product', productSchema);
 
 export default Product;

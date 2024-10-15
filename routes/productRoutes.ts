@@ -1,4 +1,4 @@
-import express from "express";
+import express from 'express';
 const router = express.Router();
 
 import {
@@ -18,29 +18,42 @@ import {
   updateQuestionToEvent,
   getEventQuestion,
   saveAnswerOfEvent,
-} from "../controllers/productController";
+  addSponsorLogoToEvent,
+  addSponsorPostOnEventView,
+  certificateUpdate,
+  addDownloadableForms,
+  saveBoot,
+} from '../controllers/productController';
 
-import { protect } from "../utils/protect";
+import { protect } from '../utils/protect';
 
-router.post("/create-product", protect, createProduct);
-router.get("/get-all-author-events", protect, getAuthorProducts);
-router.put("/add-subject-on-event", protect, addSubjectOnEvent);
-router.get("/get-single-author-event", protect, getSingleAuthorEvent);
-router.post("/check-event-subject", protect, checkEventSubject);
-router.put("/add-video-to-event-subject", protect, addVideoToEventSubject);
+router.post('/create-product', protect, createProduct);
+router.get('/get-all-author-events', protect, getAuthorProducts);
+router.put('/add-subject-on-event', protect, addSubjectOnEvent);
+router.get('/get-single-author-event', protect, getSingleAuthorEvent);
+router.post('/check-event-subject', protect, checkEventSubject);
+router.put('/add-video-to-event-subject', protect, addVideoToEventSubject);
 router.post(
-  "/check-video-title-exist-on-subject",
+  '/check-video-title-exist-on-subject',
   protect,
   checkVideoTitleExistOnSubject
 );
-router.get("/get-search-product", getProductSearchCard);
-router.get("/find-product-id", protect, findProductId);
-router.get("/get-owned-products", protect, getOwnedProducts);
-router.get("/get-view-event-product", getViewEventData);
-router.get("/get-event-qr-scan", protect, eventQrScan);
-router.put("/save-attendance", updateLinks);
-router.put("/update-questions-of-events", updateQuestionToEvent);
-router.get("/get-event-questions", protect, getEventQuestion);
-router.put("/save-answer-on-event", protect, saveAnswerOfEvent);
+router.get('/get-search-product', getProductSearchCard);
+router.get('/find-product-id', protect, findProductId);
+router.get('/get-owned-products', protect, getOwnedProducts);
+router.get('/get-view-event-product', getViewEventData);
+router.get('/get-event-qr-scan', protect, eventQrScan);
+router.put('/save-attendance', updateLinks);
+router.put('/update-questions-of-events', updateQuestionToEvent);
+router.get('/get-event-questions', protect, getEventQuestion);
+router.put('/save-answer-on-event', protect, saveAnswerOfEvent);
+router.put('/save-event-sponsor-logo', addSponsorLogoToEvent);
+router.put('/save-event-sponsor-post', addSponsorPostOnEventView);
+// UDPATE CERTIFICATE
+router.put('/update-cert', certificateUpdate);
+// update downloadable forms
+router.put('/update-downloadable-forms', addDownloadableForms);
+
+router.put('/save-sponsors-boot', saveBoot);
 
 export default router;

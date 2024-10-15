@@ -16,4 +16,4 @@ export const SOMETHING_WENT_WRONG = "000015x";
 export const VIDEO_TITLE_ALREADY_EXIST = "000016x";
 export const PRODUCT_DOES_NOT_EXIST = "000017x";
 export const NOT_AUTHORIZED = "000018x";
-
+export const ERROR_HANDLER = "000020x";
