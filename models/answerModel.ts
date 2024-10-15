@@ -16,10 +16,32 @@ const answerSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: 'CourseSubject',
   },
+  score: {
+    type: Number,
+    default: 0,
+  },
+  passing_score: {
+    type: Number,
+    default: 2,
+  },
+  passed: { type: Boolean, default: false },
+  time_expired: Date,
+  minutes_per_question: {
+    type: Number,
+    default: 1,
+  },
   answers: [
     {
       correct: Boolean,
       answer: String,
+      correct_answer: String,
+      question: String,
+      choices: [
+        {
+          label: String,
+          description: String,
+        },
+      ],
     },
   ],
 });

@@ -28,6 +28,13 @@ import {
   updateSubjectQuestion,
   getCourseSubjectAnswer,
   createAnswer,
+  saveAnswer,
+  getFineshedAnswer,
+  getSingleFineshedAnswer,
+  saveRecentClickedSubject,
+  getRecentState,
+  ifUserPassedAllTheSubjects,
+  acquiredCoursePrivateRoute,
 } from '../controllers/courseController';
 
 import { protect } from '../utils/protect';
@@ -75,5 +82,18 @@ router.get('/get-single-course-public', getCoursePublic);
 router.get('/acquired-course', protect, getAcquiredCourse);
 router.get('/get-course-subject-answer', protect, getCourseSubjectAnswer);
 router.post('/create-subject-answer', protect, createAnswer);
+router.post('/save-answer', protect, saveAnswer);
+router.get('/get-finished-answer', protect, getFineshedAnswer);
+router.get('/get-single-finished-answer', protect, getSingleFineshedAnswer);
+router.put('/save-recent-sidebar', protect, saveRecentClickedSubject);
+router.get('/get-recent-state', protect, getRecentState);
+router.get('/if-user-passed-all-subjects', protect, ifUserPassedAllTheSubjects);
+
+// acquired course private route
+router.get(
+  '/acquired-course-private-route',
+  protect,
+  acquiredCoursePrivateRoute
+);
 
 export default router;

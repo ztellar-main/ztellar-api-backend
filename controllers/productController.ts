@@ -645,6 +645,10 @@ export const addDownloadableForms = tryCatch(
         url: 'https://firebasestorage.googleapis.com/v0/b/ztellar-11a4f.appspot.com/o/event-downloadable-forms%2FTOS-Technical-Evaluation-PME-2023.pdf?alt=media&token=be962944-dc5d-47f1-9b59-c50af2ed22c7',
         title: 'TOS-Technical-Evaluation-PME-2023',
       },
+      {
+        url: 'https://firebasestorage.googleapis.com/v0/b/ztellar-11a4f.appspot.com/o/ztellar%2FASEAN%20ENGR%20PPT.pptx?alt=media&token=82acb62a-dd1a-4e4b-b94f-8438c69f6e44',
+        title: 'ASEAN ENGR - Power Point',
+      },
     ];
 
     const newForm = await Product.findOneAndUpdate(

@@ -13,8 +13,16 @@ const questionSchema = new mongoose.Schema({
           description: String,
         },
       ],
+      time_per_question_in_minutes: {
+        type: Number,
+        default: 1,
+      },
     },
   ],
+  time_per_question_in_minutes: {
+    type: Number,
+    default: 5,
+  },
 });
 
 const Question = mongoose.model('Question', questionSchema);
