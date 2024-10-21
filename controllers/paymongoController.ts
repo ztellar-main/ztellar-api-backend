@@ -198,7 +198,7 @@ export const paymentIntent = tryCatch(
       headers: {
         accept: 'application/json',
         'content-type': 'application/json',
-        authorization: 'Basic cGtfdGVzdF9NTU1DS056UWlkMmVmZnpKNG9Wejlqa2I6',
+        authorization: 'Basic c2tfbGl2ZV90UG5lNWM5WUtRZGFXVUtpYXVHN056VTk6',
       },
       data: {
         data: {
@@ -244,7 +244,7 @@ export const createPaymentMethod = tryCatch(
       headers: {
         accept: 'application/json',
         'Content-Type': 'application/json',
-        authorization: 'Basic cGtfdGVzdF9NTU1DS056UWlkMmVmZnpKNG9Wejlqa2I6',
+        authorization: 'Basic c2tfbGl2ZV90UG5lNWM5WUtRZGFXVUtpYXVHN056VTk6',
       },
       data: {
         data: {
@@ -289,7 +289,7 @@ export const attachPaymentIntent = tryCatch(
       headers: {
         accept: 'application/json',
         'content-type': 'application/json',
-        authorization: 'Basic cGtfdGVzdF9NTU1DS056UWlkMmVmZnpKNG9Wejlqa2I6',
+        authorization: 'Basic c2tfbGl2ZV90UG5lNWM5WUtRZGFXVUtpYXVHN056VTk6',
       },
       data: {
         data: {
