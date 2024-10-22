@@ -462,16 +462,12 @@ export const getCoursePublic = tryCatch(
       return stringId === uid;
     });
 
-    console.log(registeredFilter);
-
-    // const registeredFilterLength = registeredFilter.length;
-
     let registered = false;
 
     if (!registeredFilter) {
       registered = false;
-    }else{
-      registered = true
+    } else {
+      registered = true;
     }
 
     res.status(200).json({ data: course, registered });
@@ -527,7 +523,6 @@ export const getAcquiredCourse = tryCatch(
 export const setupSubjectQuestionnaire = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
     const { courseId, subjectId, questions } = req.body;
-    // console.log({ courseId, subjectId, questions });
 
     const newQuestion = await Question.create({ questions });
 
@@ -554,8 +549,6 @@ export const getSubjectQuestions = tryCatch(
       })
       .populate({ path: 'course_subjects.questions' });
 
-    console.log(product);
-
     const subjectQuestionFilter = product.course_subjects.filter(
       (data: any) => {
         const dataId = data._id.toString();
@@ -570,8 +563,6 @@ export const getSubjectQuestions = tryCatch(
 export const updateSubjectQuestion = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
     const { id, questions } = req.body;
-
-    console.log(questions);
 
     const udpatedQuestion = await Question.findOneAndUpdate(
       { _id: id },
@@ -590,10 +581,6 @@ export const getCourseSubjectAnswer = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
     const userId = req.user;
     const { courseId, subjectId } = req.query;
-
-    console.log(subjectId);
-
-    // console.log({ courseId, subjectId, userId });
 
     if (
       !courseId ||
@@ -621,8 +608,6 @@ export const createAnswer = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
     const userId = req.user;
     const { courseId, subjectId, questionTimeInMunites } = req.body;
-
-    console.log(subjectId);
 
     const expired_time = Date.now() + 1000 * 60 * questionTimeInMunites;
 
@@ -723,7 +708,6 @@ export const getFineshedAnswer = tryCatch(
       status: true,
     }).select('answers score _id passed passing_score');
 
-    // console.log(answer);
     res.status(200).json(answer);
   }
 );
@@ -745,7 +729,6 @@ export const getSingleFineshedAnswer = tryCatch(
       })
       .populate({ path: 'subject_id', select: 'title' });
 
-    // console.log(answer);
     res.status(200).json(answer);
   }
 );
@@ -836,7 +819,6 @@ export const ifUserPassedAllTheSubjects = tryCatch(
     const userId = req.user;
     const { courseId } = req.query;
 
-    console.log(courseId);
     const checkPassedSubjects = async (courseId: any) => {
       const result = await Answer.aggregate([
         // Match documents by the provided course_id and where passed is true

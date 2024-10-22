@@ -198,7 +198,7 @@ export const paymentIntent = tryCatch(
       headers: {
         accept: 'application/json',
         'content-type': 'application/json',
-        authorization: 'Basic c2tfbGl2ZV90UG5lNWM5WUtRZGFXVUtpYXVHN056VTk6',
+        authorization: `Basic ${process.env.COURSE_PAYMONGO_KEY}`,
       },
       data: {
         data: {
@@ -244,7 +244,7 @@ export const createPaymentMethod = tryCatch(
       headers: {
         accept: 'application/json',
         'Content-Type': 'application/json',
-        authorization: 'Basic c2tfbGl2ZV90UG5lNWM5WUtRZGFXVUtpYXVHN056VTk6',
+        authorization: `Basic ${process.env.COURSE_PAYMONGO_KEY}`,
       },
       data: {
         data: {
@@ -289,7 +289,7 @@ export const attachPaymentIntent = tryCatch(
       headers: {
         accept: 'application/json',
         'content-type': 'application/json',
-        authorization: 'Basic c2tfbGl2ZV90UG5lNWM5WUtRZGFXVUtpYXVHN056VTk6',
+        authorization: `Basic ${process.env.COURSE_PAYMONGO_KEY}`,
       },
       data: {
         data: {
@@ -327,7 +327,7 @@ export const retrievePaymentIntent = tryCatch(
         url: `https://api.paymongo.com/v1/payment_intents/${pid}?client_key=${cid}`,
         headers: {
           accept: 'application/json',
-          authorization: 'Basic c2tfdGVzdF9acGg1TDV2TWZRSGVIMnhZWmFKcE5Ldzg6',
+          authorization: `Basic ${process.env.COURSE_PAYMONGO_KEY}`,
         },
       });
 
