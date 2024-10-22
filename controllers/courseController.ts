@@ -254,12 +254,14 @@ export const checkIfVideoTitleAlreadyExist = tryCatch(
 // add video to subject
 export const addVideoToSubject = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
-    const { title, courseId, subjectId } = req.body;
+    const { title, courseId, subjectId, videoUrl } = req.body;
+    console.log({ title, courseId, subjectId, videoUrl });
 
     const newVideo = await Video.create({
       title,
       product_id: courseId,
       subject_id: subjectId,
+      video_public_url: videoUrl,
     });
 
     const videoUrlConverted = `course/${courseId}/${subjectId}/${newVideo._id}/adaptive.m3u8`;
@@ -487,7 +489,7 @@ export const getAcquiredCourse = tryCatch(
       .populate({ path: 'course_subjects.data', select: 'title' })
       .populate({
         path: 'course_subjects.videos.data',
-        select: 'title video_url_converted',
+        select: 'title video_url_converted video_public_url',
       })
       .populate({ path: 'course_subjects.questions', select: '-answer' });
 

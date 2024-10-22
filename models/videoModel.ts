@@ -14,6 +14,7 @@ const videoSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    video_public_url: String,
   },
   { timestamps: true }
 );
