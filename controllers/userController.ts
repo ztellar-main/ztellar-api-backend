@@ -525,23 +525,20 @@ export const updateProfilePicAll = tryCatch(
 // sponsor reserve and send email
 export const sponsorReserveAndSendEmail = tryCatch(
   async (req: Request, res: Response) => {
-    const {
-      productId,
-      senderEmail,
-      eventTitle,
-      bootNumber,
-      sponsorType,
-      sponsorPrice,
-      bootId,
-    } = req.body;
+    const { productId, senderEmail, eventTitle, bootData, mainBootId } =
+      req.body;
+
+    const bootName = bootData?.boot_name;
+    const bootType = bootData?.boot_type;
+    const bootPrice = bootData?.boot_price;
 
     sendEmail(
-      'denverbigayan1@gmail.com',
+      'admin@ztellar.tech',
       senderEmail,
       eventTitle,
-      bootNumber,
-      sponsorType,
-      sponsorPrice
+      bootName,
+      bootType,
+      bootPrice
     );
 
     const productData = await Product.findOneAndUpdate(
@@ -549,13 +546,13 @@ export const sponsorReserveAndSendEmail = tryCatch(
         _id: productId,
       },
       {
-        $set: { 'sponsors_boot.$[e1].boot_list.$[e2].status': 'Reserved' },
+        $set: {
+          'sponsors_boot.$[e1].boot_list.$[e2].boot_status': 'Reserved',
+          'sponsors_boot.$[e1].boot_list.$[e2].boot_reserved_by': senderEmail,
+        },
       },
       {
-        arrayFilters: [
-          { 'e1._id': '66bd9a33440a4a846164555e' },
-          { 'e2._id': bootId },
-        ],
+        arrayFilters: [{ 'e1._id': mainBootId }, { 'e2._id': bootData?._id }],
         new: true,
       }
     );

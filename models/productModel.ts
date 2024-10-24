@@ -168,22 +168,27 @@ const productSchema = new mongoose.Schema(
     ],
     sponsors_boot: [
       {
-        boot_legend: String,
-        boor_message: String,
+        boot_legend: [
+          {
+            legend_type: String,
+            price: Number,
+          },
+        ],
+        boot_message: String,
         file_letter_url: String,
         image_url: String,
         boot_list: [
           {
-            boot_number: String,
-            status: String,
-            reserved_by: String,
-            sold_to: String,
-            prices: [
-              {
-                price_name: String,
-                price: Number,
-              },
-            ],
+            boot_name: String,
+            boot_status: {
+              type: String,
+              default: 'Available',
+            },
+            boot_reserved_by: String,
+            boot_sold_to: String,
+            boot_type: String,
+            boot_price: Number,
+            boot_type_color: String,
           },
         ],
       },
@@ -200,7 +205,6 @@ const productSchema = new mongoose.Schema(
       },
     ],
   },
-
   { timestamps: true }
 );
 

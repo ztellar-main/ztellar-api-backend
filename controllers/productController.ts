@@ -325,8 +325,7 @@ export const updateLinks = tryCatch(async (req: Request, res: Response) => {
 // ADD QUESTION
 export const updateQuestionToEvent = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
-
-    const {id} = req.body;
+    const { id } = req.body;
 
     const productId = '6688de27a366e5146109d850';
     const asd = [
@@ -674,28 +673,312 @@ export const saveBoot = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
     const data = [
       {
+        boot_legend: [
+          {
+            legend_type: 'Platinum',
+            price: 200000,
+          },
+        ],
+        boot_message: String,
+        file_letter_url: String,
         image_url:
-          'https://firebasestorage.googleapis.com/v0/b/ztellar-11a4f.appspot.com/o/event-downloadable-forms%2Fimgpsh_fullsize_anim%20(2).jpg?alt=media&token=886bea27-e00e-46b9-803e-1045af17a856',
+          'https://firebasestorage.googleapis.com/v0/b/ztellar-11a4f.appspot.com/o/ztellar%2Fimgpsh_fullsize_anim%20(2).jpg?alt=media&token=4e786805-cec3-4d60-8377-3c6c37856676',
         boot_list: [
-          // {
-          //   boot_number: String,
-          //   status: String,
-          //   reserved_by: String,
-          //   sold_to: String,
-          //   prices: [
-          //     {
-          //       price_name: String,
-          //       price: Number,
-          //     },
-          //   ],
-          // },
+          {
+            boot_name: 'Souvenir Program',
+            boot_type: 'Full Page',
+            boot_price: '10000',
+            boot_type_color: 'bg-blue-100',
+          },
+          {
+            boot_name: 'Souvenir Program',
+            boot_type: 'Half Page',
+            boot_price: '5000',
+            boot_type_color: 'bg-blue-100',
+          },
+          {
+            boot_name: 'ztellar.tech',
+            boot_type: 'Product Brochure',
+            boot_price: '5000',
+            boot_type_color: 'bg-blue-100',
+          },
+          {
+            boot_name: 'ztellar.tech',
+            boot_type: 'Video 30 mins',
+            boot_price: '15000',
+            boot_type_color: 'bg-blue-100',
+          },
+          {
+            boot_name: 'Product Presentation',
+            boot_type: '30 mins',
+            boot_price: '25000',
+            boot_type_color: 'bg-blue-100',
+          },
+          {
+            boot_name: '1',
+            boot_type: 'Table Sponsor',
+            boot_price: '10000',
+            boot_type_color: 'bg-blue-gray-200',
+          },
+          {
+            boot_name: '1',
+            boot_type: 'Special Sponsor',
+            boot_price: '10000',
+            boot_type_color: 'bg-blue-200',
+          },
+          {
+            boot_name: '2',
+            boot_type: 'Platinum',
+            boot_price: '200000',
+            boot_type_color: 'bg-green-100',
+          },
+          {
+            boot_name: '2',
+            boot_type: 'Table Sponsor',
+            boot_price: '10000',
+            boot_type_color: 'bg-blue-gray-200',
+          },
+          {
+            boot_name: '2',
+            boot_type: 'Special Sponsor',
+            boot_price: '35000',
+            boot_type_color: 'bg-blue-200',
+          },
+          {
+            boot_name: '3',
+            boot_type: 'Gold',
+            boot_price: '150000',
+            boot_type_color: 'bg-[#FFD700]',
+          },
+          {
+            boot_name: '3',
+            boot_type: 'Table Sponsor',
+            boot_price: '10000',
+            boot_type_color: 'bg-blue-gray-200',
+          },
+          {
+            boot_name: '3',
+            boot_type: 'Special Sponsor',
+            boot_price: '35000',
+            boot_type_color: 'bg-blue-200',
+          },
+          {
+            boot_name: '4',
+            boot_type: 'Platinum',
+            boot_price: '200000',
+            boot_type_color: 'bg-green-100',
+          },
+          {
+            boot_name: '4',
+            boot_type: 'Table Sponsor',
+            boot_price: '10000',
+            boot_type_color: 'bg-blue-gray-200',
+          },
+          {
+            boot_name: '4',
+            boot_type: 'Special Sponsor',
+            boot_price: '35000',
+            boot_type_color: 'bg-blue-200',
+          },
+          {
+            boot_name: '5',
+            boot_type: 'Platium',
+            boot_price: '200000',
+            boot_type_color: 'bg-blue-gray-200',
+          },
+          {
+            boot_name: '5',
+            boot_type: 'Table Sponsor',
+            boot_price: '10000',
+            boot_type_color: 'bg-blue-gray-200',
+          },
+          {
+            boot_name: '5',
+            boot_type: 'Special Sponsor',
+            boot_price: '35000',
+            boot_type_color: 'bg-blue-200',
+          },
+          {
+            boot_name: '6',
+            boot_type: 'Gold',
+            boot_price: '150000',
+            boot_type_color: 'bg-[#FFD700]',
+          },
+          {
+            boot_name: '6',
+            boot_type: 'Table Sponsor',
+            boot_price: '10000',
+            boot_type_color: 'bg-blue-gray-200',
+          },
+          {
+            boot_name: '6',
+            boot_type: 'Special Sponsor',
+            boot_price: '35000',
+            boot_type_color: 'bg-blue-200',
+          },
+          {
+            boot_name: '7',
+            boot_type: 'Silver',
+            boot_price: '75000',
+            boot_type_color: 'bg-[#C0C0C0]',
+          },
+          {
+            boot_name: '7',
+            boot_type: 'Table Sponsor',
+            boot_price: '10000',
+            boot_type_color: 'bg-blue-gray-200',
+          },
+          {
+            boot_name: '7',
+            boot_type: 'Special Sponsor',
+            boot_price: '35000',
+            boot_type_color: 'bg-blue-200',
+          },
+          {
+            boot_name: '8',
+            boot_type: 'Bronze',
+            boot_price: '50000',
+            boot_type_color: 'bg-[#CD7F32]',
+          },
+          {
+            boot_name: '8',
+            boot_type: 'Table Sponsor',
+            boot_price: '10000',
+            boot_type_color: 'bg-blue-gray-200',
+          },
+          {
+            boot_name: '8',
+            boot_type: 'Special Sponsor',
+            boot_price: '35000',
+            boot_type_color: 'bg-blue-200',
+          },
+          {
+            boot_name: '9',
+            boot_type: 'Bronze',
+            boot_price: '50000',
+            boot_type_color: 'bg-[#CD7F32]',
+          },
+          {
+            boot_name: '9',
+            boot_type: 'Table Sponsor',
+            boot_price: '10000',
+            boot_type_color: 'bg-blue-gray-200',
+          },
+          {
+            boot_name: '9',
+            boot_type: 'Special Sponsor',
+            boot_price: '35000',
+            boot_type_color: 'bg-blue-200',
+          },
+          {
+            boot_name: '10',
+            boot_type: 'Gold',
+            boot_price: '150000',
+            boot_type_color: 'bg-[#FFD700]',
+          },
+          {
+            boot_name: '10',
+            boot_type: 'Table Sponsor',
+            boot_price: '10000',
+            boot_type_color: 'bg-blue-gray-200',
+          },
+          {
+            boot_name: '10',
+            boot_type: 'Special Sponsor',
+            boot_price: '35000',
+            boot_type_color: 'bg-blue-200',
+          },
+          {
+            boot_name: '11',
+            boot_type: 'Gold',
+            boot_price: '150000',
+            boot_type_color: 'bg-[#FFD700]',
+          },
+          {
+            boot_name: '11',
+            boot_type: 'Table Sponsor',
+            boot_price: '10000',
+            boot_type_color: 'bg-blue-gray-200',
+          },
+          {
+            boot_name: '11',
+            boot_type: 'Special Sponsor',
+            boot_price: '35000',
+            boot_type_color: 'bg-blue-200',
+          },
+          {
+            boot_name: '12',
+            boot_type: 'Bronze',
+            boot_price: '50000',
+            boot_type_color: 'bg-[#CD7F32]',
+          },
+          {
+            boot_name: '12',
+            boot_type: 'Table Sponsor',
+            boot_price: '10000',
+            boot_type_color: 'bg-blue-gray-200',
+          },
+          {
+            boot_name: '12',
+            boot_type: 'Special Sponsor',
+            boot_price: '35000',
+            boot_type_color: 'bg-blue-200',
+          },
+          {
+            boot_name: '13',
+            boot_type: 'Silver',
+            boot_price: '75000',
+            boot_type_color: 'bg-[#C0C0C0]',
+          },
+          {
+            boot_name: '13',
+            boot_type: 'Table Sponsor',
+            boot_price: '10000',
+            boot_type_color: 'bg-blue-gray-200',
+          },
+          {
+            boot_name: '14',
+            boot_type: 'Silver',
+            boot_price: '75000',
+            boot_type_color: 'bg-[#C0C0C0]',
+          },
+          {
+            boot_name: '14',
+            boot_type: 'Table Sponsor',
+            boot_price: '10000',
+            boot_type_color: 'bg-blue-gray-200',
+          },
+          {
+            boot_name: '15',
+            boot_type: 'Table Sponsor',
+            boot_price: '10000',
+            boot_type_color: 'bg-blue-gray-200',
+          },
+          {
+            boot_name: '16',
+            boot_type: 'Table Sponsor',
+            boot_price: '10000',
+            boot_type_color: 'bg-blue-gray-200',
+          },
+          {
+            boot_name: '17',
+            boot_type: 'Table Sponsor',
+            boot_price: '10000',
+            boot_type_color: 'bg-blue-gray-200',
+          },
+          {
+            boot_name: '18',
+            boot_type: 'Table Sponsor',
+            boot_price: '10000',
+            boot_type_color: 'bg-blue-gray-200',
+          },
         ],
       },
     ];
 
     const updatedProduct = await Product.findOneAndUpdate(
       {
-        _id: '66d6cea6b48e256d047b6746',
+        _id: '66f9ef9d40f619374478bde0',
       },
       {
         $set: { sponsors_boot: data },

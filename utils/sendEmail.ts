@@ -27,7 +27,7 @@ export const sendEmail = async (
       to: `${email}`, // list of receivers
       subject: "Ztellar - verify your email", // Subject line
       // text: `${otp}`, // plain text body
-      html: `Email: ${senderEmail}<br>Event Title: ${eventTitle} <br> Boot Number: ${bootNumber} <br> Sponsor Type: ${sponsorType} <br> Sponsor Price: ${sponsorPrice}`, // html body
+      html: `Email: ${senderEmail}<br>Event Title: ${eventTitle} <br> Boot Number: ${bootNumber} <br> Boot Type: ${sponsorType} <br> Boot Price: ${sponsorPrice}`, // html body
     });
     return true;
   }
