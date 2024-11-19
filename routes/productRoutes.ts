@@ -81,10 +81,6 @@ router.put(
 );
 
 // SAMPLE
-router.get(
-  '/get-payment',
-
-  getPayment
-);
+router.get('/get-payment', getPayment);
 
 export default router;

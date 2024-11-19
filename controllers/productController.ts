@@ -42,7 +42,6 @@ export const getAuthorProducts = tryCatch(
     const userId = req.user;
 
     const allAuthorProducts = await Product.find({
-      author_id: userId,
       type: 'event',
     }).select('_id author_id title subjects');
     res.status(200).json(allAuthorProducts);
@@ -885,7 +884,7 @@ export const getEventDetailsAuthorDashboard = tryCatch(
       const chartData = await Product.aggregate([
         {
           $match: {
-            _id: new mongoose.Types.ObjectId('66f9ef9d40f619374478bde0'),
+            _id: new mongoose.Types.ObjectId(`${eventId}`),
           },
         },
         { $unwind: '$registered' }, // Unwind the array to process each registration
@@ -915,9 +914,11 @@ export const getEventDetailsAuthorDashboard = tryCatch(
     const chartWeekLabels = chartWeek.map((data: any) => {
       return data?._id?.week;
     });
+
     const chartWeekDataset = chartWeek.map((data: any) => {
       return data?.quantity;
     });
+    console.log(chartWeek);
 
     const chartMonth = await getChartData('month');
     const chartYear = await getChartData('year');
