@@ -671,7 +671,7 @@ export const saveBoot = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
     const newSponsor = await Product.findOneAndUpdate(
       {
-        _id: '66f9ef9d40f619374478bde0',
+        _id: '66b1e778ecaa46a200a6eb83',
       },
       { $set: { sponsors_boot: sponsorValue } },
       { new: true }
@@ -978,9 +978,12 @@ export const authorUpdateBoothStatusAndBoothLogs = tryCatch(
 // GET PAYMENTS
 export const getPayment = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
-    const payment = await Payment.find({
-      product_id: '66b1e778ecaa46a200a6eb83',
-    });
+    const payment = await Product.findOneAndUpdate(
+      {
+        _id: '66f9ef9d40f619374478bde0',
+      },
+      { $set: { pay_rate: { rate_type: 'percent', value: 7 } } }
+    );
 
     res.json(payment);
   }

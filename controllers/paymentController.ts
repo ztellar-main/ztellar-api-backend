@@ -12,6 +12,8 @@ export interface IGetUserAuthInfoRequest extends Request {
 export const createPayment = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
     const userId = req.user;
+    let finalZtellarFee = 0;
+    let finalAuthorFee = 0;
 
     // const userId = "6648af4ed324ee229b29acd5";
     const {
@@ -26,7 +28,22 @@ export const createPayment = tryCatch(
       buyerId,
       authorPayment,
       ztellarFee,
+      transactionFee,
     } = req.body;
+
+    const event = await Product.findOne({ _id: productId });
+
+    if (event.pay_rate.rate_type === 'percent') {
+      const transacFee = (event.pay_rate.value / 100) * baseAmount;
+      finalZtellarFee = transacFee - transactionFee;
+      finalAuthorFee = baseAmount - transacFee;
+    }
+
+    if (event.pay_rate.rate_type === 'amount') {
+      const transacFee = event.pay_rate.value;
+      finalZtellarFee = transacFee - transactionFee;
+      finalAuthorFee = baseAmount - transacFee;
+    }
 
     const userUpdate = await User.findByIdAndUpdate(
       { _id: userId },
@@ -52,8 +69,8 @@ export const createPayment = tryCatch(
             qr_code: userId,
             reg_type: regType,
             product_type: productType,
-            author_payment: authorPayment,
-            ztellar_fee: ztellarFee,
+            author_payment: finalAuthorFee,
+            ztellar_fee: finalZtellarFee,
             payment_mode: paymentMode,
           },
         },
@@ -70,14 +87,13 @@ export const createPayment = tryCatch(
       payment_mode: paymentMode,
       payment_source: paymentSource,
       base_amount: baseAmount,
-      less_amount: lessAmount,
-      author_payment: authorPayment,
-      ztellar_fee: ztellarFee,
+      author_payment: finalAuthorFee,
+      ztellar_fee: finalZtellarFee,
     });
     const updateAuthor = await User.findOneAndUpdate(
       { _id: authorId },
       {
-        $inc: { author_event_balance: authorPayment },
+        $inc: { author_event_balance: finalAuthorFee },
       }
     );
     res.status(201).json('success');
@@ -87,6 +103,9 @@ export const createPayment = tryCatch(
 // CREATE PAYMENT
 export const createPaymentCashPayment = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
+    let finalZtellarFee = 0;
+    let finalAuthorFee = 0;
+
     const {
       lessAmount,
       baseAmount,
@@ -99,9 +118,18 @@ export const createPaymentCashPayment = tryCatch(
       buyerId,
       authorPayment,
       ztellarFee,
+      transactionFee,
     } = req.body;
 
     const userId = buyerId;
+
+    const event = await Product.findOne({ _id: productId });
+
+    if (event.pay_rate.rate_type === 'percent') {
+      const transacFee = (event.pay_rate.value / 100) * baseAmount;
+      finalZtellarFee = transacFee - transactionFee;
+      finalAuthorFee = baseAmount - transacFee;
+    }
 
     const userUpdate = await User.findByIdAndUpdate(
       { _id: userId },
@@ -127,6 +155,9 @@ export const createPaymentCashPayment = tryCatch(
             qr_code: userId,
             reg_type: regType,
             product_type: productType,
+            author_payment: finalAuthorFee,
+            ztellar_fee: finalZtellarFee,
+            payment_mode: paymentMode,
           },
         },
       },
@@ -175,14 +206,14 @@ export const createCashPayment = tryCatch(
     // });
 
     const userUpdate = await User.findByIdAndUpdate(
-      { _id: "6736fbffe712651f3bd3876d" }, //
+      { _id: '6736fbffe712651f3bd3876d' }, //
       {
         $push: {
           product_owned: {
-            _id: "66b1e778ecaa46a200a6eb83",
-            qr_code: "6736fbffe712651f3bd3876d", //
-            reg_type: "virtual",
-            product_type: "event",
+            _id: '66b1e778ecaa46a200a6eb83',
+            qr_code: '6736fbffe712651f3bd3876d', //
+            reg_type: 'virtual',
+            product_type: 'event',
           },
         },
       },
@@ -190,18 +221,18 @@ export const createCashPayment = tryCatch(
     );
 
     const courseUpdate = await Product.findByIdAndUpdate(
-      { _id: "66b1e778ecaa46a200a6eb83" },
+      { _id: '66b1e778ecaa46a200a6eb83' },
       {
         $push: {
           registered: {
-            _id: "6736fbffe712651f3bd3876d", //
-            qr_code: "6736fbffe712651f3bd3876d", //
+            _id: '6736fbffe712651f3bd3876d', //
+            qr_code: '6736fbffe712651f3bd3876d', //
             reg_type: 'virtual',
-            product_type: "event",
+            product_type: 'event',
             author_payment: 930,
             ztellar_fee: 28,
-            payment_mode: 'card',//
-            date: new Date("2024-11-15T07:51:45.711Z")//
+            payment_mode: 'card', //
+            date: new Date('2024-11-15T07:51:45.711Z'), //
           },
         },
       },
@@ -209,20 +240,20 @@ export const createCashPayment = tryCatch(
     );
 
     const savePayment = await Payment.create({
-      author_id: "66ad77d8606b8b7cf750ede4",
-      product_type: "event",
-      product_id: "66b1e778ecaa46a200a6eb83",
+      author_id: '66ad77d8606b8b7cf750ede4',
+      product_type: 'event',
+      product_id: '66b1e778ecaa46a200a6eb83',
       reg_type: 'virtual',
       buyer_id: '6736fbffe712651f3bd3876d', //
-      payment_mode: 'card',//
+      payment_mode: 'card', //
       payment_source: 'paymongo',
       author_payment: 930,
-      ztellar_fee: 28,//
-      date: new Date("2024-11-15T07:51:45.711Z")//
+      ztellar_fee: 28, //
+      date: new Date('2024-11-15T07:51:45.711Z'), //
     });
 
     const updateAuthor = await User.findOneAndUpdate(
-      { _id: "66ad77d8606b8b7cf750ede4" },
+      { _id: '66ad77d8606b8b7cf750ede4' },
       {
         $inc: { author_event_balance: 930 },
       }

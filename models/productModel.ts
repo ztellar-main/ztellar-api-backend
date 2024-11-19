@@ -227,6 +227,10 @@ const productSchema = new mongoose.Schema(
         title: String,
       },
     ],
+    pay_rate: {
+      rate_type: String,
+      value: Number,
+    },
   },
   { timestamps: true }
 );
