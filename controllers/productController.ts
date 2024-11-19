@@ -407,10 +407,6 @@ export const getEventQuestion = tryCatch(
       return data.product_id.toString() == id;
     });
 
-    // console.log(ifAnswerExistOnUser.finished);
-
-    // console.log(ifAnswerExistOnUser);
-
     if (ifAnswerExistOnUser?.finished === true) {
       return res.json({ data: ifAnswerExistOnUser, finished: true });
     }
@@ -530,7 +526,6 @@ export const addSponsorLogoToEvent = tryCatch(
 // add sponsor post on view event
 export const addSponsorPostOnEventView = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
-    console.log(req.body);
     try {
       const updatedEvent = await Product.findOneAndUpdate(
         {
@@ -669,323 +664,323 @@ export const addDownloadableForms = tryCatch(
   }
 );
 
+// SAVE BOOT
+import { sponsorValue } from '../utils/sponsorValue';
+import { sponsorReservationEmailEvent } from '../utils/sponsorReservationEmailEvent';
+import Payment from '../models/paymentModel';
 export const saveBoot = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
-    const data = [
-      {
-        boot_legend: [
-          {
-            legend_type: 'Platinum',
-            price: 200000,
-          },
-        ],
-        boot_message: String,
-        file_letter_url: String,
-        image_url:
-          'https://firebasestorage.googleapis.com/v0/b/ztellar-11a4f.appspot.com/o/ztellar%2Fimgpsh_fullsize_anim%20(2).jpg?alt=media&token=4e786805-cec3-4d60-8377-3c6c37856676',
-        boot_list: [
-          {
-            boot_name: 'Souvenir Program',
-            boot_type: 'Full Page',
-            boot_price: '10000',
-            boot_type_color: 'bg-blue-100',
-          },
-          {
-            boot_name: 'Souvenir Program',
-            boot_type: 'Half Page',
-            boot_price: '5000',
-            boot_type_color: 'bg-blue-100',
-          },
-          {
-            boot_name: 'ztellar.tech',
-            boot_type: 'Product Brochure',
-            boot_price: '5000',
-            boot_type_color: 'bg-blue-100',
-          },
-          {
-            boot_name: 'ztellar.tech',
-            boot_type: 'Video 30 mins',
-            boot_price: '15000',
-            boot_type_color: 'bg-blue-100',
-          },
-          {
-            boot_name: 'Product Presentation',
-            boot_type: '30 mins',
-            boot_price: '25000',
-            boot_type_color: 'bg-blue-100',
-          },
-          {
-            boot_name: '1',
-            boot_type: 'Table Sponsor',
-            boot_price: '10000',
-            boot_type_color: 'bg-blue-gray-200',
-          },
-          {
-            boot_name: '1',
-            boot_type: 'Special Sponsor',
-            boot_price: '10000',
-            boot_type_color: 'bg-blue-200',
-          },
-          {
-            boot_name: '2',
-            boot_type: 'Platinum',
-            boot_price: '200000',
-            boot_type_color: 'bg-green-100',
-          },
-          {
-            boot_name: '2',
-            boot_type: 'Table Sponsor',
-            boot_price: '10000',
-            boot_type_color: 'bg-blue-gray-200',
-          },
-          {
-            boot_name: '2',
-            boot_type: 'Special Sponsor',
-            boot_price: '35000',
-            boot_type_color: 'bg-blue-200',
-          },
-          {
-            boot_name: '3',
-            boot_type: 'Gold',
-            boot_price: '150000',
-            boot_type_color: 'bg-[#FFD700]',
-          },
-          {
-            boot_name: '3',
-            boot_type: 'Table Sponsor',
-            boot_price: '10000',
-            boot_type_color: 'bg-blue-gray-200',
-          },
-          {
-            boot_name: '3',
-            boot_type: 'Special Sponsor',
-            boot_price: '35000',
-            boot_type_color: 'bg-blue-200',
-          },
-          {
-            boot_name: '4',
-            boot_type: 'Platinum',
-            boot_price: '200000',
-            boot_type_color: 'bg-green-100',
-          },
-          {
-            boot_name: '4',
-            boot_type: 'Table Sponsor',
-            boot_price: '10000',
-            boot_type_color: 'bg-blue-gray-200',
-          },
-          {
-            boot_name: '4',
-            boot_type: 'Special Sponsor',
-            boot_price: '35000',
-            boot_type_color: 'bg-blue-200',
-          },
-          {
-            boot_name: '5',
-            boot_type: 'Platium',
-            boot_price: '200000',
-            boot_type_color: 'bg-blue-gray-200',
-          },
-          {
-            boot_name: '5',
-            boot_type: 'Table Sponsor',
-            boot_price: '10000',
-            boot_type_color: 'bg-blue-gray-200',
-          },
-          {
-            boot_name: '5',
-            boot_type: 'Special Sponsor',
-            boot_price: '35000',
-            boot_type_color: 'bg-blue-200',
-          },
-          {
-            boot_name: '6',
-            boot_type: 'Gold',
-            boot_price: '150000',
-            boot_type_color: 'bg-[#FFD700]',
-          },
-          {
-            boot_name: '6',
-            boot_type: 'Table Sponsor',
-            boot_price: '10000',
-            boot_type_color: 'bg-blue-gray-200',
-          },
-          {
-            boot_name: '6',
-            boot_type: 'Special Sponsor',
-            boot_price: '35000',
-            boot_type_color: 'bg-blue-200',
-          },
-          {
-            boot_name: '7',
-            boot_type: 'Silver',
-            boot_price: '75000',
-            boot_type_color: 'bg-[#C0C0C0]',
-          },
-          {
-            boot_name: '7',
-            boot_type: 'Table Sponsor',
-            boot_price: '10000',
-            boot_type_color: 'bg-blue-gray-200',
-          },
-          {
-            boot_name: '7',
-            boot_type: 'Special Sponsor',
-            boot_price: '35000',
-            boot_type_color: 'bg-blue-200',
-          },
-          {
-            boot_name: '8',
-            boot_type: 'Bronze',
-            boot_price: '50000',
-            boot_type_color: 'bg-[#CD7F32]',
-          },
-          {
-            boot_name: '8',
-            boot_type: 'Table Sponsor',
-            boot_price: '10000',
-            boot_type_color: 'bg-blue-gray-200',
-          },
-          {
-            boot_name: '8',
-            boot_type: 'Special Sponsor',
-            boot_price: '35000',
-            boot_type_color: 'bg-blue-200',
-          },
-          {
-            boot_name: '9',
-            boot_type: 'Bronze',
-            boot_price: '50000',
-            boot_type_color: 'bg-[#CD7F32]',
-          },
-          {
-            boot_name: '9',
-            boot_type: 'Table Sponsor',
-            boot_price: '10000',
-            boot_type_color: 'bg-blue-gray-200',
-          },
-          {
-            boot_name: '9',
-            boot_type: 'Special Sponsor',
-            boot_price: '35000',
-            boot_type_color: 'bg-blue-200',
-          },
-          {
-            boot_name: '10',
-            boot_type: 'Gold',
-            boot_price: '150000',
-            boot_type_color: 'bg-[#FFD700]',
-          },
-          {
-            boot_name: '10',
-            boot_type: 'Table Sponsor',
-            boot_price: '10000',
-            boot_type_color: 'bg-blue-gray-200',
-          },
-          {
-            boot_name: '10',
-            boot_type: 'Special Sponsor',
-            boot_price: '35000',
-            boot_type_color: 'bg-blue-200',
-          },
-          {
-            boot_name: '11',
-            boot_type: 'Gold',
-            boot_price: '150000',
-            boot_type_color: 'bg-[#FFD700]',
-          },
-          {
-            boot_name: '11',
-            boot_type: 'Table Sponsor',
-            boot_price: '10000',
-            boot_type_color: 'bg-blue-gray-200',
-          },
-          {
-            boot_name: '11',
-            boot_type: 'Special Sponsor',
-            boot_price: '35000',
-            boot_type_color: 'bg-blue-200',
-          },
-          {
-            boot_name: '12',
-            boot_type: 'Bronze',
-            boot_price: '50000',
-            boot_type_color: 'bg-[#CD7F32]',
-          },
-          {
-            boot_name: '12',
-            boot_type: 'Table Sponsor',
-            boot_price: '10000',
-            boot_type_color: 'bg-blue-gray-200',
-          },
-          {
-            boot_name: '12',
-            boot_type: 'Special Sponsor',
-            boot_price: '35000',
-            boot_type_color: 'bg-blue-200',
-          },
-          {
-            boot_name: '13',
-            boot_type: 'Silver',
-            boot_price: '75000',
-            boot_type_color: 'bg-[#C0C0C0]',
-          },
-          {
-            boot_name: '13',
-            boot_type: 'Table Sponsor',
-            boot_price: '10000',
-            boot_type_color: 'bg-blue-gray-200',
-          },
-          {
-            boot_name: '14',
-            boot_type: 'Silver',
-            boot_price: '75000',
-            boot_type_color: 'bg-[#C0C0C0]',
-          },
-          {
-            boot_name: '14',
-            boot_type: 'Table Sponsor',
-            boot_price: '10000',
-            boot_type_color: 'bg-blue-gray-200',
-          },
-          {
-            boot_name: '15',
-            boot_type: 'Table Sponsor',
-            boot_price: '10000',
-            boot_type_color: 'bg-blue-gray-200',
-          },
-          {
-            boot_name: '16',
-            boot_type: 'Table Sponsor',
-            boot_price: '10000',
-            boot_type_color: 'bg-blue-gray-200',
-          },
-          {
-            boot_name: '17',
-            boot_type: 'Table Sponsor',
-            boot_price: '10000',
-            boot_type_color: 'bg-blue-gray-200',
-          },
-          {
-            boot_name: '18',
-            boot_type: 'Table Sponsor',
-            boot_price: '10000',
-            boot_type_color: 'bg-blue-gray-200',
-          },
-        ],
-      },
-    ];
-
-    const updatedProduct = await Product.findOneAndUpdate(
+    const newSponsor = await Product.findOneAndUpdate(
       {
         _id: '66f9ef9d40f619374478bde0',
       },
-      {
-        $set: { sponsors_boot: data },
-      },
+      { $set: { sponsors_boot: sponsorValue } },
       { new: true }
     );
 
-    res.status(201).json(updatedProduct);
+    res.json(newSponsor);
+  }
+);
+
+// GET ALL EVENT BOOTHS
+export const getAllEventBooths = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { status, productId } = req.query;
+
+    const event = await Product.findOne({ _id: productId });
+
+    const sponsorsBooths = event?.sponsors_boot?.booths;
+
+    let filteredBooths: any = [];
+
+    if (status === 'All') {
+      filteredBooths = sponsorsBooths;
+    } else {
+      filteredBooths = sponsorsBooths.filter((data: any) => {
+        return data.booth_status === status;
+      });
+    }
+
+    res.json({
+      booths: filteredBooths,
+      title: event?.title,
+      boothFile: event?.sponsors_boot?.booth_file,
+      boothImage: event?.sponsors_boot?.booth_image,
+    });
+  }
+);
+
+// GET SPONSOR SINGLE BOOTH
+export const getSingleEventBooths = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { productId, boothId } = req.query;
+
+    const event = await Product.findOne({ _id: productId });
+
+    const boothFile = event.sponsors_boot.booth_file;
+    const eventTitle = event?.title;
+
+    const booth = event.sponsors_boot.booths.find((data: any) => {
+      const stringId = data?._id.toString();
+      return stringId === boothId;
+    });
+
+    res.json({ booth, boothFile, eventTitle });
+  }
+);
+
+// RESERVE BOOTH
+export const reserveBooth = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const {
+      companyName,
+      companyAddress,
+      companyTinNumber,
+      companyContact,
+      companyContactPerson,
+      mainLineOfBusiness,
+      learnUs,
+      productId,
+      boothId,
+      bootName,
+      bootType,
+      bootPrice,
+    } = req.body;
+
+    const productEvent = await Product.findOneAndUpdate(
+      { _id: productId },
+      {
+        $set: {
+          'sponsors_boot.booths.$[e1].reserved_company_name': companyName,
+          'sponsors_boot.booths.$[e1].reserve_company_address': companyAddress,
+          'sponsors_boot.booths.$[e1].reserve_tin_number': companyTinNumber,
+          'sponsors_boot.booths.$[e1].reserve_company_contact': companyContact,
+          'sponsors_boot.booths.$[e1].reserve_contact_person':
+            companyContactPerson,
+          'sponsors_boot.booths.$[e1].reserve_mainline_business':
+            mainLineOfBusiness,
+          'sponsors_boot.booths.$[e1].reserve_solicitor': learnUs,
+          'sponsors_boot.booths.$[e1].booth_status': 'Pending Reserved',
+        },
+      },
+      {
+        arrayFilters: [{ 'e1._id': boothId }],
+      }
+    );
+
+    const productTitle = productEvent?.title;
+
+    // SEND EMAIL TO ZTELLAR
+    await sponsorReservationEmailEvent(
+      companyName,
+      companyAddress,
+      companyTinNumber,
+      companyContact,
+      companyContactPerson,
+      mainLineOfBusiness,
+      learnUs,
+      bootName,
+      bootType,
+      bootPrice,
+      productTitle
+    );
+
+    res.json('success');
+  }
+);
+
+// GET AUTHOR DASHBOARD
+export const getAuthorDashboard = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const userId = req.user;
+
+    // author
+    const author = await User.findOne({ _id: userId });
+
+    const role: string = author?.role;
+
+    if (role === 'member') {
+      throw new AppError('Not Authorized', 'Not Authorized', 401);
+    }
+
+    // EVENTS
+    const events = await Product.find({
+      access_users: { $in: userId },
+      type: 'event',
+    });
+
+    if (!events) {
+      throw new AppError('No event', 'No event', 400);
+    }
+
+    const authorCurrentBalance = author.author_event_balance;
+
+    res.json({ events: events, currentBalance: authorCurrentBalance });
+  }
+);
+
+// GET EVENT DETAILS AUTHOR DASHBOARD
+export const getEventDetailsAuthorDashboard = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { eventId } = req.query;
+    const userId = req.user;
+
+    const event = await Product.findOne({
+      _id: eventId,
+      access_users: { $in: userId },
+    }).populate({
+      path: 'registered._id',
+      select: 'fname mname lname mobile_number email',
+    });
+
+    if (!event) {
+      throw new AppError('Not Authorized', 'Not Authorized', 400);
+    }
+
+    // TOTAL
+    const totalAuthorPayment = event?.registered?.reduce(
+      (sum: any, registration: any) => sum + (registration.author_payment || 0),
+      0
+    );
+
+    // NUMBER OF REGISTERED
+    const numberOfRegistered = event?.registered?.length;
+
+    // NUMBER OF REGISTERED - FACE TO FACE
+    const numberOfRegisteredFaceToFace = event?.registered?.filter(
+      (data: any) => {
+        return data?.reg_type === 'face_to_face';
+      }
+    ).length;
+
+    // NUMBER OF REGISTERED - virtual
+    const numberOfRegisteredVirtual = event?.registered?.filter((data: any) => {
+      return data?.reg_type === 'virtual';
+    }).length;
+
+    // LIST OF REGISTERED
+    const listOfRegistered = event?.registered;
+
+    //
+    const getChartData = async (timeInterval: any) => {
+      let dateFormat = null;
+
+      // Determine the grouping format based on timeInterval
+      switch (timeInterval) {
+        case 'week':
+          dateFormat = { week: { $week: '$registered.date' } }; // Group by ISO week
+          break;
+        case 'month':
+          dateFormat = { month: { $month: '$registered.date' } }; // Group by month
+          break;
+        case 'year':
+          dateFormat = { year: { $year: '$registered.date' } }; // Group by year
+          break;
+        default:
+          throw new Error(
+            "Invalid time interval. Use 'week', 'month', or 'year'."
+          );
+      }
+
+      const chartData = await Product.aggregate([
+        {
+          $match: {
+            _id: new mongoose.Types.ObjectId('66f9ef9d40f619374478bde0'),
+          },
+        },
+        { $unwind: '$registered' }, // Unwind the array to process each registration
+        // { $match: { 'registered.payment_mode': 'gcash' } },
+        {
+          $group: {
+            _id: dateFormat,
+            quantity: { $sum: 1 }, // Count registrations per group
+          },
+        },
+        {
+          $sort: { _id: 1 }, // Sort the results by the grouped time interval
+        },
+      ]);
+
+      return chartData;
+    };
+
+    // DOWNLOADABLE EXCEL DATA - REGISTERED USER DATA
+    const excel = event?.registered?.map((data: any) => {
+      return data?._id;
+    });
+
+    // CHART
+    const chartWeek = await getChartData('week');
+
+    const chartWeekLabels = chartWeek.map((data: any) => {
+      return data?._id?.week;
+    });
+    const chartWeekDataset = chartWeek.map((data: any) => {
+      return data?.quantity;
+    });
+
+    const chartMonth = await getChartData('month');
+    const chartYear = await getChartData('year');
+
+    // SPONSORS
+    const sponsorsBooths = event?.sponsors_boot?.booths;
+
+    res.json({
+      total: totalAuthorPayment,
+      numberOfRegistered,
+      numberOfRegisteredFaceToFace,
+      numberOfRegisteredVirtual,
+      listOfRegistered,
+      chartWeek: {
+        chartWeekLabels,
+        chartWeekDataset,
+      },
+      chartMonth,
+      chartYear,
+      excel,
+      sponsorsBooths,
+    });
+  }
+);
+
+// AUTHOR UPDATE BOOTH STATUS AND SAVE UPDATE BOOTH STATUS LOGS
+export const authorUpdateBoothStatusAndBoothLogs = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const userId = req.user;
+    const { eventId, boothId, boothStatus } = req.body;
+
+    const user = await User.findOne({ _id: userId });
+
+    const userEmail = user?.email;
+
+    await Product.findOneAndUpdate(
+      { _id: eventId },
+      {
+        $set: { 'sponsors_boot.booths.$[e1].booth_status': boothStatus },
+        $push: {
+          'sponsors_boot.booths.$[e1].booth_status_update_logs': {
+            user_id: userId,
+            email: userEmail,
+            booth_status_value: boothStatus,
+          },
+        },
+      },
+      {
+        arrayFilters: [{ 'e1._id': boothId }],
+      }
+    );
+
+    res.json('success');
+  }
+);
+
+// GET PAYMENTS
+export const getPayment = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const payment = await Payment.find({
+      product_id: '66b1e778ecaa46a200a6eb83',
+    });
+
+    res.json(payment);
   }
 );

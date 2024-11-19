@@ -7,6 +7,12 @@ const productSchema = new mongoose.Schema(
   {
     title: String,
     description: String,
+    access_users: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
     prices: [
       {
         priceType: String,
@@ -52,9 +58,16 @@ const productSchema = new mongoose.Schema(
         qr_code: String,
         reg_type: String,
         product_type: String,
+        author_payment: Number,
+        ztellar_fee: Number,
+        payment_mode: String,
         pass: {
           type: Boolean,
           default: false,
+        },
+        date: {
+          type: Date,
+          default: Date.now(),
         },
       },
     ],
@@ -166,33 +179,43 @@ const productSchema = new mongoose.Schema(
         ],
       },
     ],
-    sponsors_boot: [
-      {
-        boot_legend: [
-          {
-            legend_type: String,
-            price: Number,
+    sponsors_boot: {
+      booth_image: String,
+      booth_file: String,
+      booths: [
+        {
+          booth_name: String,
+          booth_type: String,
+          booth_price: Number,
+          booth_status: {
+            type: String,
+            default: 'Available',
           },
-        ],
-        boot_message: String,
-        file_letter_url: String,
-        image_url: String,
-        boot_list: [
-          {
-            boot_name: String,
-            boot_status: {
-              type: String,
-              default: 'Available',
+          // INFO FROM SPONSOR
+          reserved_company_name: String,
+          reserve_company_address: String,
+          reserve_tin_number: String,
+          reserve_company_contact: String,
+          reserve_mainline_business: String,
+          reserve_contact_person: String,
+          reserve_solicitor: String,
+          booth_status_update_logs: [
+            {
+              user_id: {
+                type: mongoose.Schema.ObjectId,
+                ref: 'User',
+              },
+              email: String,
+              date: {
+                type: Date,
+                default: Date.now(),
+              },
+              booth_status_value: String,
             },
-            boot_reserved_by: String,
-            boot_sold_to: String,
-            boot_type: String,
-            boot_price: Number,
-            boot_type_color: String,
-          },
-        ],
-      },
-    ],
+          ],
+        },
+      ],
+    },
     activate: {
       type: Boolean,
       default: false,

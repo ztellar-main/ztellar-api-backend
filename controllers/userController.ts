@@ -24,7 +24,6 @@ import { isValidObjectId } from 'mongoose';
 import Product from '../models/productModel';
 import mongoose from 'mongoose';
 import Payment from '../models/paymentModel';
-import { sendEmail } from '../utils/sendEmail';
 
 export interface IGetUserAuthInfoRequest extends Request {
   user: any; // or any other type
@@ -519,44 +518,5 @@ export const updateProfilePicAll = tryCatch(
     );
 
     res.json(updatedUser);
-  }
-);
-
-// sponsor reserve and send email
-export const sponsorReserveAndSendEmail = tryCatch(
-  async (req: Request, res: Response) => {
-    const { productId, senderEmail, eventTitle, bootData, mainBootId } =
-      req.body;
-
-    const bootName = bootData?.boot_name;
-    const bootType = bootData?.boot_type;
-    const bootPrice = bootData?.boot_price;
-
-    sendEmail(
-      'admin@ztellar.tech',
-      senderEmail,
-      eventTitle,
-      bootName,
-      bootType,
-      bootPrice
-    );
-
-    const productData = await Product.findOneAndUpdate(
-      {
-        _id: productId,
-      },
-      {
-        $set: {
-          'sponsors_boot.$[e1].boot_list.$[e2].boot_status': 'Reserved',
-          'sponsors_boot.$[e1].boot_list.$[e2].boot_reserved_by': senderEmail,
-        },
-      },
-      {
-        arrayFilters: [{ 'e1._id': mainBootId }, { 'e2._id': bootData?._id }],
-        new: true,
-      }
-    );
-
-    res.json(productData);
   }
 );

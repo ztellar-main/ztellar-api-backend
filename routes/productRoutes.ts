@@ -23,6 +23,13 @@ import {
   certificateUpdate,
   addDownloadableForms,
   saveBoot,
+  getAllEventBooths,
+  getSingleEventBooths,
+  reserveBooth,
+  getAuthorDashboard,
+  getEventDetailsAuthorDashboard,
+  authorUpdateBoothStatusAndBoothLogs,
+  getPayment,
 } from '../controllers/productController';
 
 import { protect } from '../utils/protect';
@@ -55,5 +62,29 @@ router.put('/update-cert', certificateUpdate);
 router.put('/update-downloadable-forms', addDownloadableForms);
 
 router.put('/save-sponsors-boot', saveBoot);
+
+router.get('/get-all-event-booths', protect, getAllEventBooths);
+router.get('/get-single-event-booths', protect, getSingleEventBooths);
+router.put('/reserve-booth', protect, reserveBooth);
+
+// ATHOUR DASHBOARD
+router.get('/get-author-dashboard', protect, getAuthorDashboard);
+router.get(
+  '/get-event-details-author-dashboard',
+  protect,
+  getEventDetailsAuthorDashboard
+);
+router.put(
+  '/author-update-booth-status-and-logs',
+  protect,
+  authorUpdateBoothStatusAndBoothLogs
+);
+
+// SAMPLE
+router.get(
+  '/get-payment',
+
+  getPayment
+);
 
 export default router;

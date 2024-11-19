@@ -1,9 +1,9 @@
-import Payment from "../models/paymentModel";
-import Product from "../models/productModel";
-import User from "../models/userModel";
-import { tryCatch } from "../utils/tryCatch";
-import { Response, Request } from "express";
-import mongoose from "mongoose";
+import Payment from '../models/paymentModel';
+import Product from '../models/productModel';
+import User from '../models/userModel';
+import { tryCatch } from '../utils/tryCatch';
+import { Response, Request } from 'express';
+import mongoose from 'mongoose';
 export interface IGetUserAuthInfoRequest extends Request {
   user: any; // or any other type
 }
@@ -14,7 +14,6 @@ export const createPayment = tryCatch(
     const userId = req.user;
 
     // const userId = "6648af4ed324ee229b29acd5";
-
     const {
       lessAmount,
       baseAmount,
@@ -53,6 +52,9 @@ export const createPayment = tryCatch(
             qr_code: userId,
             reg_type: regType,
             product_type: productType,
+            author_payment: authorPayment,
+            ztellar_fee: ztellarFee,
+            payment_mode: paymentMode,
           },
         },
       },
@@ -72,8 +74,13 @@ export const createPayment = tryCatch(
       author_payment: authorPayment,
       ztellar_fee: ztellarFee,
     });
-
-    res.status(201).json("success");
+    const updateAuthor = await User.findOneAndUpdate(
+      { _id: authorId },
+      {
+        $inc: { author_event_balance: authorPayment },
+      }
+    );
+    res.status(201).json('success');
   }
 );
 
@@ -120,6 +127,7 @@ export const createPaymentCashPayment = tryCatch(
             qr_code: userId,
             reg_type: regType,
             product_type: productType,
+
           },
         },
       },
@@ -140,28 +148,32 @@ export const createPaymentCashPayment = tryCatch(
       ztellar_fee: ztellarFee,
     });
 
-    res.status(201).json("success");
+    res.status(201).json('success');
   }
 );
 
 // CASH PAYMENT
 export const createCashPayment = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
-    const {
+    const { authorId, productId, productType, regType, buyerId, priceFinal } =
+      req.body;
+
+    const userId = buyerId;
+
+    const authorPaymentFinal = Number(priceFinal) * 0.9;
+    const ztellarFeeFinal = Number(priceFinal) * 0.1;
+
+    console.log({
       authorId,
       productId,
       productType,
       regType,
       buyerId,
-      priceFinal
-    } = req.body;
-
-    const userId = buyerId;
-
-    const authorPaymentFinal = Number(priceFinal) * .9;
-    const ztellarFeeFinal = Number(priceFinal) * .1;
-
-    console.log({authorId,productId,productType,regType,buyerId,priceFinal,authorPaymentFinal,ztellarFeeFinal,userId})
+      priceFinal,
+      authorPaymentFinal,
+      ztellarFeeFinal,
+      userId,
+    });
 
     const userUpdate = await User.findByIdAndUpdate(
       { _id: userId },
@@ -172,6 +184,7 @@ export const createCashPayment = tryCatch(
             qr_code: userId,
             reg_type: regType,
             product_type: productType,
+
           },
         },
       },
@@ -187,13 +200,14 @@ export const createCashPayment = tryCatch(
             qr_code: userId,
             reg_type: regType,
             product_type: productType,
+            author_payment: authorPaymentFinal,
+            ztellar_fee: ztellarFeeFinal,
+            payment_mode: "",
           },
         },
       },
       { new: true, upsert: true }
     );
-
-
 
     const savePayment = await Payment.create({
       author_id: authorId,
@@ -201,12 +215,12 @@ export const createCashPayment = tryCatch(
       product_id: productId,
       reg_type: regType,
       buyer_id: buyerId,
-      payment_mode: "cash",
-      payment_source: "ztellar",
+      payment_mode: 'cash',
+      payment_source: 'ztellar',
       author_payment: authorPaymentFinal,
       ztellar_fee: ztellarFeeFinal,
     });
 
-    res.status(201).json("success");
+    res.status(201).json('success');
   }
 );

@@ -90,6 +90,10 @@ const userSchema = new mongoose.Schema(
         },
       },
     ],
+    author_event_balance: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true }
 );
