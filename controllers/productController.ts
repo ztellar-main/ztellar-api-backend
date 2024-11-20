@@ -926,6 +926,9 @@ export const getEventDetailsAuthorDashboard = tryCatch(
     // SPONSORS
     const sponsorsBooths = event?.sponsors_boot?.booths;
 
+    // EVENT TITLE
+    const eventTitle = event.title;
+
     res.json({
       total: totalAuthorPayment,
       numberOfRegistered,
@@ -940,6 +943,7 @@ export const getEventDetailsAuthorDashboard = tryCatch(
       chartYear,
       excel,
       sponsorsBooths,
+      eventTitle
     });
   }
 );
