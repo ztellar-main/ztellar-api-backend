@@ -14,7 +14,9 @@ export const sponsorReservationEmailEvent = async (
   bootName: string,
   bootType: string,
   bootPrice: string,
-  productTitle: string
+  productTitle: string,
+  email: string,
+  userEmail: string
 ) => {
   function formatToPeso(number: number) {
     return new Intl.NumberFormat('en-PH', {
@@ -36,10 +38,11 @@ export const sponsorReservationEmailEvent = async (
     await transporter.sendMail({
       from: '<Zstellar01@gmail.com>', // sender address
       // to: `${email}`, // list of receivers
-      to: `denverbigayan1@gmail.com`, // list of receivers
+      to: email, // list of receivers
       subject: `Sponsor Reservation for - ${productTitle}`, // Subject line
       // text: `${otp}`, // plain text body
       html: `
+      Email: ${userEmail} <br>
       Booth Name: ${bootName} <br>
       Booth Type: ${bootType} <br>
       Booth Price: ${formatToPeso(Number(bootPrice))} <br>

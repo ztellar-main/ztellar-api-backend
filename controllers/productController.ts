@@ -731,6 +731,9 @@ export const getSingleEventBooths = tryCatch(
 // RESERVE BOOTH
 export const reserveBooth = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const userId = req.user;
+
+    const user = await User.findOne({ _id: userId });
     const {
       companyName,
       companyAddress,
@@ -781,7 +784,26 @@ export const reserveBooth = tryCatch(
       bootName,
       bootType,
       bootPrice,
-      productTitle
+      productTitle,
+      'denverbigayan1@gmail.com',
+      user.email
+    );
+
+    // SEND EMAIL TO ZTELLAR
+    await sponsorReservationEmailEvent(
+      companyName,
+      companyAddress,
+      companyTinNumber,
+      companyContact,
+      companyContactPerson,
+      mainLineOfBusiness,
+      learnUs,
+      bootName,
+      bootType,
+      bootPrice,
+      productTitle,
+      'admin@ztellar.tech',
+      user.email
     );
 
     res.json('success');
@@ -943,7 +965,7 @@ export const getEventDetailsAuthorDashboard = tryCatch(
       chartYear,
       excel,
       sponsorsBooths,
-      eventTitle
+      eventTitle,
     });
   }
 );
