@@ -980,7 +980,7 @@ export const getPayment = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
     const payment = await Product.findOneAndUpdate(
       {
-        _id: '66f9ef9d40f619374478bde0',
+        _id: '66b1e778ecaa46a200a6eb83',
       },
       { $set: { pay_rate: { rate_type: 'percent', value: 7 } } }
     );
