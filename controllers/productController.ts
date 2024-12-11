@@ -666,7 +666,6 @@ export const addDownloadableForms = tryCatch(
 // SAVE BOOT
 import { sponsorValue } from '../utils/sponsorValue';
 import { sponsorReservationEmailEvent } from '../utils/sponsorReservationEmailEvent';
-import Payment from '../models/paymentModel';
 export const saveBoot = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
     const newSponsor = await Product.findOneAndUpdate(
@@ -940,7 +939,6 @@ export const getEventDetailsAuthorDashboard = tryCatch(
     const chartWeekDataset = chartWeek.map((data: any) => {
       return data?.quantity;
     });
-    console.log(chartWeek);
 
     const chartMonth = await getChartData('month');
     const chartYear = await getChartData('year');
@@ -1014,3 +1012,5 @@ export const getPayment = tryCatch(
     res.json(payment);
   }
 );
+
+

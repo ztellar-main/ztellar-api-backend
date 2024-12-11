@@ -206,12 +206,12 @@ export const createCashPayment = tryCatch(
     // });
 
     const userUpdate = await User.findByIdAndUpdate(
-      { _id: '6736fbffe712651f3bd3876d' }, //
+      { _id: '66ad77d8606b8b7cf750ede4' }, //
       {
         $push: {
           product_owned: {
-            _id: '66b1e778ecaa46a200a6eb83',
-            qr_code: '6736fbffe712651f3bd3876d', //
+            _id: '66c71ee6c99f1b29689ff969',
+            qr_code: '66ad77d8606b8b7cf750ede4', //
             reg_type: 'virtual',
             product_type: 'event',
           },
@@ -219,18 +219,19 @@ export const createCashPayment = tryCatch(
       },
       { new: true, upsert: true }
     );
+    console.log(userUpdate);
 
     const courseUpdate = await Product.findByIdAndUpdate(
-      { _id: '66b1e778ecaa46a200a6eb83' },
+      { _id: '66c71ee6c99f1b29689ff969' },
       {
         $push: {
           registered: {
-            _id: '6736fbffe712651f3bd3876d', //
-            qr_code: '6736fbffe712651f3bd3876d', //
+            _id: '66ad77d8606b8b7cf750ede4', //
+            qr_code: '66ad77d8606b8b7cf750ede4', //
             reg_type: 'virtual',
             product_type: 'event',
-            author_payment: 930,
-            ztellar_fee: 28,
+            author_payment: 0,
+            ztellar_fee: 0,
             payment_mode: 'card', //
             date: new Date('2024-11-15T07:51:45.711Z'), //
           },
@@ -247,17 +248,17 @@ export const createCashPayment = tryCatch(
       buyer_id: '6736fbffe712651f3bd3876d', //
       payment_mode: 'card', //
       payment_source: 'paymongo',
-      author_payment: 930,
-      ztellar_fee: 28, //
+      author_payment: 0,
+      ztellar_fee: 0, //
       date: new Date('2024-11-15T07:51:45.711Z'), //
     });
 
-    const updateAuthor = await User.findOneAndUpdate(
-      { _id: '66ad77d8606b8b7cf750ede4' },
-      {
-        $inc: { author_event_balance: 930 },
-      }
-    );
+    // const updateAuthor = await User.findOneAndUpdate(
+    //   { _id: '66ad77d8606b8b7cf750ede4' },
+    //   {
+    //     $inc: { author_event_balance: 0 },
+    //   }
+    // );
 
     res.status(201).json('success');
   }

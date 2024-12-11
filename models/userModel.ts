@@ -94,6 +94,14 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    bank_name: String,
+    bank_account_name: String,
+    bank_account_number: String,
+    business_type: String,
+    tin: String,
+    company_registration_number: String,
+    landline: String,
+    company_address: String,
   },
   { timestamps: true }
 );

@@ -19,9 +19,13 @@ import {
   getUser,
   updateProfilePicAll,
   companyVerifyEmailandSignup,
+  udpateAuthorAccountDetails,
+  getUserDetailsForUpdateAccountDetails,
+  getUserAccountDetails,
 } from '../controllers/userController';
 
 import { protect } from '../utils/protect';
+import { authorDashboardProtect } from '../utils/protect';
 
 router.post('/send-otp', sendOTp);
 router.post('/login', login);
@@ -40,5 +44,22 @@ router.get('/get-user-for-login', getUserForLoginUpdate);
 router.post('/user-exist', getUser);
 router.put('/update-all-profile-pic', updateProfilePicAll);
 router.post('/company-verify-email-and-signup', companyVerifyEmailandSignup);
+
+// AUTHOR DASHBOARD ROUTES
+router.put(
+  '/update-author-account-details',
+  authorDashboardProtect(['author', 'partner', 'superAuthorUser']),
+  udpateAuthorAccountDetails
+);
+router.get(
+  '/author-details-update-account-details',
+  authorDashboardProtect(['author', 'partner', 'superAuthorUser']),
+  getUserDetailsForUpdateAccountDetails
+);
+router.get(
+  '/get-author-account-details',
+  authorDashboardProtect(['author', 'partner', 'superAuthorUser']),
+  getUserAccountDetails
+);
 
 export default router;

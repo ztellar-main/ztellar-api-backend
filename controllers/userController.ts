@@ -520,3 +520,93 @@ export const updateProfilePicAll = tryCatch(
     res.json(updatedUser);
   }
 );
+
+// UDPATE AUTHOR ACCOUNT DETAILS
+export const udpateAuthorAccountDetails = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const userId = req.user;
+    const {
+      bankName,
+      bankAccountName,
+      bankAccountNumber,
+      mobileNumber,
+      companyName,
+      businessType,
+      tin,
+      companyRegistrationNumber,
+      landline,
+      companyAddress,
+    } = req.body;
+
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: { $eq: userId } },
+      {
+        $set: {
+          bank_name: bankName,
+          bank_account_name: bankAccountName,
+          bank_account_number: bankAccountNumber,
+          mobile_number: mobileNumber,
+          company_name: companyName,
+          business_type: businessType,
+          tin,
+          company_registration_number: companyRegistrationNumber,
+          landline,
+          company_address: companyAddress,
+        },
+      }
+    );
+
+    console.log(updatedUser);
+
+    res.json('success');
+  }
+);
+
+// GET AUTHOR'S ACCOUNT DETAILS - UPDATE ACCOUNT
+export const getUserDetailsForUpdateAccountDetails = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const userId = req.user;
+
+    const user = await User.findOne({ _id: userId });
+
+    const userData = {
+      bankName: user.bank_name,
+      accountName: user.bank_account_name,
+      accountNumber: user.bank_account_number,
+      mobileNumber: user.mobile_number,
+      companyName: user.company_name,
+      businessType: user.business_type,
+      tinNumber: user.tin,
+      companyRegNumber: user.company_registration_number,
+      landline: user.landline,
+      companyAddress: user.company_address,
+    };
+
+    res.status(200).json(userData);
+  }
+);
+
+// GET AUTHOR'S ACCOUNT DETAILS - ACCOUNT DETAILS
+export const getUserAccountDetails = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const userId = req.user;
+
+    const user = await User.findOne({ _id: userId });
+
+    const userData = {
+      companyName: user.company_name,
+      businessType: user.business_type,
+      companyTin: user.tin,
+      companyRegistrationNumber: user.company_registration_number,
+      companyAddress: user.company_address,
+      authorEmail: user.email,
+      mobileNumber: user.mobile_number,
+      landline: user.landline,
+      bankName: user.bank_name,
+      accountName: user.bank_account_name,
+      accountNumber: user.bank_account_number,
+    };
+
+    res.status(200).json(userData);
+  }
+);
