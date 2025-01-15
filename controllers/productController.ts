@@ -1013,4 +1013,15 @@ export const getPayment = tryCatch(
   }
 );
 
+// get data to acquire event
+export const getDataToAcquireEvent = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const eventId = req.query.id;
 
+    const event = await Product.findOne({ _id: eventId }).select(
+      'prices author_id _id title image_url transaction'
+    );
+
+    res.json(event);
+  }
+);

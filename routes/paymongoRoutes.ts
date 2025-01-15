@@ -10,6 +10,10 @@ import {
   createPaymentMethod,
   attachPaymentIntent,
   retrievePaymentIntent,
+  createPaymentMethodForEvent,
+  attachPaymentIntentForEvent,
+  retrievePaymentIntentForEvent,
+  createPaymentIntentForEvent,
 } from '../controllers/paymongoController';
 
 import { protect } from '../utils/protect';
@@ -30,5 +34,27 @@ router.post('/create-payment-intent', protect, paymentIntent);
 router.post('/create-payment-method', protect, createPaymentMethod);
 router.post('/attach-payment-intent', protect, attachPaymentIntent);
 router.put('/retrieve-payment-intent', protect, retrievePaymentIntent);
+
+// event
+router.post(
+  '/create-payment-intent-for-event',
+  protect,
+  createPaymentIntentForEvent
+);
+router.post(
+  '/create-payment-method-for-event',
+  protect,
+  createPaymentMethodForEvent
+);
+router.post(
+  '/attach-payment-intent-for-event',
+  protect,
+  attachPaymentIntentForEvent
+);
+router.put(
+  '/retrieve-payment-intent-for-event',
+  protect,
+  retrievePaymentIntentForEvent
+);
 
 export default router;

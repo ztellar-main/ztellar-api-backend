@@ -231,6 +231,10 @@ const productSchema = new mongoose.Schema(
       rate_type: String,
       value: Number,
     },
+    transaction: {
+      transaction_type: String,
+      value: String,
+    },
   },
   { timestamps: true }
 );

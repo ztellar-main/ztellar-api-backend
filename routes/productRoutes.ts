@@ -30,6 +30,7 @@ import {
   getEventDetailsAuthorDashboard,
   authorUpdateBoothStatusAndBoothLogs,
   getPayment,
+  getDataToAcquireEvent,
 } from '../controllers/productController';
 
 import { protect } from '../utils/protect';
@@ -82,5 +83,9 @@ router.put(
 
 // SAMPLE
 router.put('/get-payment', getPayment);
+
+// BUYING EVENT
+router.get('/get-data-buying-event', getDataToAcquireEvent);
+
 
 export default router;
