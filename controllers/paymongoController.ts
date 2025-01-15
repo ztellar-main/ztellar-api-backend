@@ -453,29 +453,35 @@ export const createPaymentIntentForEvent = tryCatch(
 
     let finalAmount: any;
     let transactionFee: any;
-    const ztellarFee = amount * Number(event?.transaction?.value);
+    let ztellarFee: any;
 
     const numberAmount = Number(amount);
 
     if (paymentMethod === 'gcash') {
       const rate = 0.022;
+      const ztellar = Number(event?.transaction?.value) - rate;
+      ztellarFee = amount * Number(ztellar);
       const f = 1 - rate;
       const subAmount = numberAmount / f;
-      finalAmount = Math.ceil(subAmount) + ztellarFee;
-      transactionFee = finalAmount - amount;
+      const finalSubAmount = Math.ceil(subAmount) + ztellarFee;
+      finalAmount = Math.ceil(Number(finalSubAmount));
     }
 
     if (paymentMethod === 'paymaya') {
       const rate = 0.019;
+      const ztellar = Number(event?.transaction?.value) - rate;
+      ztellarFee = amount * Number(ztellar);
       const f = 1 - rate;
       const subAmount = numberAmount / f;
-      finalAmount = Math.ceil(subAmount) + ztellarFee;
+      const finalSubAmount = Math.ceil(subAmount) + ztellarFee;
+      finalAmount = Math.ceil(Number(finalSubAmount));
       transactionFee = finalAmount - amount;
     }
 
     const finalDescription = `${id}/${authorId}/${registrationType}/${amount}/${transactionFee}/${ztellarFee}`;
 
     const toPay = Number(`${finalAmount}00`);
+
     const options = {
       method: 'POST',
       url: 'https://api.paymongo.com/v1/payment_intents',
