@@ -463,7 +463,7 @@ export const createPaymentIntentForEvent = tryCatch(
       ztellarFee = amount * Number(ztellar);
       const f = 1 - rate;
       const subAmount = numberAmount / f;
-      const finalSubAmount = Math.ceil(subAmount) + ztellarFee;
+      const finalSubAmount = Math.ceil(subAmount) + Math.ceil(ztellarFee);
       finalAmount = Math.ceil(Number(finalSubAmount));
     }
 
@@ -473,7 +473,7 @@ export const createPaymentIntentForEvent = tryCatch(
       ztellarFee = amount * Number(ztellar);
       const f = 1 - rate;
       const subAmount = numberAmount / f;
-      const finalSubAmount = Math.ceil(subAmount) + ztellarFee;
+      const finalSubAmount = Math.ceil(subAmount) + Math.ceil(ztellarFee);
       finalAmount = Math.ceil(Number(finalSubAmount));
       transactionFee = finalAmount - amount;
     }
