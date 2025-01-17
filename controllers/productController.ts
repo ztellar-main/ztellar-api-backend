@@ -1031,9 +1031,9 @@ export const getDataToAcquireEvent = tryCatch(
 // get access token for live
 export const getAccessTokenForLive = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
-    const CLIENT_ID = 'T5EZmt9GTOy3j4X5ULRs7w';
-    const CLIENT_SECRET = 'KZKMBKoFy5fwB4uThieA79BBXnt70n5z';
-    const AACOUNT_ID = 'XNLf36a5T--AFJ2FnVWpSw';
+    const CLIENT_ID = 'y07n7VePTPKRl2kQC8rw8w';
+    const CLIENT_SECRET = 'NY24OWoOAUe2V8Xw4KIIsi8Oo1eEfBHv';
+    const AACOUNT_ID = 'dgoGsgkMSA27BOJh0Sc0_A';
     try {
       const result = await axios({
         method: 'post',
