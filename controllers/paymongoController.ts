@@ -446,6 +446,8 @@ export const retrievePaymentIntent = tryCatch(
 // CREATE PAYMENT INTENT
 export const createPaymentIntentForEvent = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const userId = req.user;
+
     const { amount, title, id, authorId, registrationType, paymentMethod } =
       req.body;
 
@@ -465,6 +467,7 @@ export const createPaymentIntentForEvent = tryCatch(
       const subAmount = numberAmount / f;
       const finalSubAmount = Math.ceil(subAmount) + Math.ceil(ztellarFee);
       finalAmount = Math.ceil(Number(finalSubAmount));
+      transactionFee = finalAmount - numberAmount;
     }
 
     if (paymentMethod === 'paymaya') {
@@ -475,10 +478,10 @@ export const createPaymentIntentForEvent = tryCatch(
       const subAmount = numberAmount / f;
       const finalSubAmount = Math.ceil(subAmount) + Math.ceil(ztellarFee);
       finalAmount = Math.ceil(Number(finalSubAmount));
-      transactionFee = finalAmount - amount;
+      transactionFee = finalAmount - numberAmount;
     }
 
-    const finalDescription = `${id}/${authorId}/${registrationType}/${amount}/${transactionFee}/${ztellarFee}`;
+    const finalDescription = `${id}/${authorId}/${registrationType}/${amount}/${transactionFee}/${ztellarFee}/${userId}`;
 
     const toPay = Number(`${finalAmount}00`);
 

@@ -235,6 +235,7 @@ const productSchema = new mongoose.Schema(
       transaction_type: String,
       value: String,
     },
+    live_access_id: String,
   },
   { timestamps: true }
 );

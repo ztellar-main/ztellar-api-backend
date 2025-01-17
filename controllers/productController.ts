@@ -666,6 +666,8 @@ export const addDownloadableForms = tryCatch(
 // SAVE BOOT
 import { sponsorValue } from '../utils/sponsorValue';
 import { sponsorReservationEmailEvent } from '../utils/sponsorReservationEmailEvent';
+import ZoomMeeting from '../models/ZoomMeeting';
+import axios from 'axios';
 export const saveBoot = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
     const newSponsor = await Product.findOneAndUpdate(
@@ -1023,5 +1025,127 @@ export const getDataToAcquireEvent = tryCatch(
     );
 
     res.json(event);
+  }
+);
+
+// get access token for live
+export const getAccessTokenForLive = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const CLIENT_ID = 'T5EZmt9GTOy3j4X5ULRs7w';
+    const CLIENT_SECRET = 'KZKMBKoFy5fwB4uThieA79BBXnt70n5z';
+    const AACOUNT_ID = 'XNLf36a5T--AFJ2FnVWpSw';
+    try {
+      const result = await axios({
+        method: 'post',
+        url: 'https://zoom.us/oauth/token',
+        data: { grant_type: 'account_credentials', account_id: AACOUNT_ID },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          Authorization: `Basic ${Buffer.from(
+            `${CLIENT_ID}:${CLIENT_SECRET}`
+          ).toString('base64')}`,
+        },
+      });
+      res.json(result?.data);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+);
+
+// create or update zoom meeting
+export const createUpdateZoomLiveMeeting = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { topic, startTime, duration, accessToken, adminEmail, eventId } =
+      req.body;
+
+    try {
+      const response = await axios.post(
+        `https://api.zoom.us/v2/users/me/meetings`,
+        {
+          topic,
+          type: 2, // Scheduled meeting
+          start_time: startTime,
+          duration,
+          timezone: 'UTC',
+          settings: {
+            host_video: true,
+            participant_video: false,
+          },
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      const meeting = await ZoomMeeting.findOne({ eventId });
+
+      if (!meeting) {
+        const newMeeting = new ZoomMeeting({
+          meetingId: response.data.id,
+          topic: response.data.topic,
+          startTime: response.data.start_time,
+          duration: response.data.duration,
+          joinUrl: response.data.join_url,
+          createdBy: adminEmail,
+          admin_url: response.data.start_url,
+          eventId,
+        });
+        await newMeeting.save();
+        return res.json('success');
+      }
+
+      // udpate meeting
+      await ZoomMeeting.findOneAndUpdate(
+        { eventId: eventId },
+        {
+          $set: {
+            meetingId: response.data.id,
+            topic: response.data.topic,
+            startTime: response.data.start_time,
+            duration: response.data.duration,
+            joinUrl: response.data.join_url,
+            admin_url: response.data.start_url,
+          },
+        }
+      );
+
+      res.json('success');
+    } catch (err) {
+      console.log(err?.response?.data?.message);
+    }
+  }
+);
+
+// get credentials for creating live
+export const getCredentialsForCreatingLive = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { id } = req.query;
+
+    const product = await Product.findOne({ _id: id }).select(
+      'live_access_id title'
+    );
+
+    const meetingData = await ZoomMeeting.findOne({
+      eventId: id,
+    });
+
+    res.json({ ...product, meetingData });
+  }
+);
+
+// get zoom join url for client
+export const getZoomJoinUrl = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const id = req.query.id;
+
+    const meetingData = await ZoomMeeting.findOne({
+      eventId: id,
+    }).select('joinUrl');
+
+    res.json(meetingData);
   }
 );

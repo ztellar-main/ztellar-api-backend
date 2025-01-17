@@ -31,6 +31,10 @@ import {
   authorUpdateBoothStatusAndBoothLogs,
   getPayment,
   getDataToAcquireEvent,
+  createUpdateZoomLiveMeeting,
+  getCredentialsForCreatingLive,
+  getAccessTokenForLive,
+  getZoomJoinUrl,
 } from '../controllers/productController';
 
 import { protect } from '../utils/protect';
@@ -87,5 +91,16 @@ router.put('/get-payment', getPayment);
 // BUYING EVENT
 router.get('/get-data-buying-event', getDataToAcquireEvent);
 
+// get access token to create live
+router.get('/get-access-token-zoom-live', getAccessTokenForLive);
+
+// create and update zoom live
+router.post('/create-update-zoom-live', createUpdateZoomLiveMeeting);
+
+// get creadetials for creating zoom live event
+router.get('/get-credentials-for-zoom-live', getCredentialsForCreatingLive);
+
+// get zoom join url for client
+router.get('/get-zoom-url-for-client', getZoomJoinUrl);
 
 export default router;
