@@ -7,6 +7,7 @@ import { addSponsorBoot } from './authorController';
 import Product from '../models/productModel';
 import User from '../models/userModel';
 import Payment from '../models/paymentModel';
+import Pidcid from '../models/PidCid';
 export interface IGetUserAuthInfoRequest extends Request {
   user: any; // or any other type
 }
@@ -448,40 +449,21 @@ export const createPaymentIntentForEvent = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
     const userId = req.user;
 
-    const { amount, title, id, authorId, registrationType, paymentMethod } =
-      req.body;
+    const {
+      amount,
+      title,
+      id,
+      authorId,
+      registrationType,
+      paymentMethod,
+      baseAmount,
+    } = req.body;
 
     const event = await Product.findOne({ _id: id }).select('transaction');
 
-    let finalAmount: any;
-    let transactionFee: any;
-    let ztellarFee: any;
+    const finalDescription = `${id}/${authorId}/${registrationType}/${baseAmount}/${amount}/${paymentMethod}/${userId}`;
 
-    const numberAmount = Number(amount);
-
-    if (paymentMethod === 'gcash') {
-      const rate = 0.022;
-      const ztellar = Number(event?.transaction?.value) - rate;
-      ztellarFee = amount * Number(ztellar);
-      const f = 1 - rate;
-      const subAmount = numberAmount / f;
-      const finalSubAmount = Math.ceil(subAmount) + Math.ceil(ztellarFee);
-      finalAmount = Math.ceil(Number(finalSubAmount));
-      transactionFee = finalAmount - numberAmount;
-    }
-
-    if (paymentMethod === 'paymaya') {
-      const rate = 0.019;
-      const ztellar = Number(event?.transaction?.value) - rate;
-      ztellarFee = amount * Number(ztellar);
-      const f = 1 - rate;
-      const subAmount = numberAmount / f;
-      const finalSubAmount = Math.ceil(subAmount) + Math.ceil(ztellarFee);
-      finalAmount = Math.ceil(Number(finalSubAmount));
-      transactionFee = finalAmount - numberAmount;
-    }
-
-    const finalDescription = `${id}/${authorId}/${registrationType}/${amount}/${transactionFee}/${ztellarFee}/${userId}`;
+    const finalAmount = Math.ceil(amount);
 
     const toPay = Number(`${finalAmount}00`);
 
@@ -570,10 +552,12 @@ export const createPaymentMethodForEvent = tryCatch(
 // ATTACH PAYMENT INTENT FOR EVENT
 export const attachPaymentIntentForEvent = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const userId = req.user;
     const { paymentMethodId, paymentIntentId, clientKey } = req.body;
 
     const redirectUrl = `${process.env.COURSE_PAYMONGO_REDIRECT}/process-payment/e?mid=${paymentMethodId}&cid=${clientKey}&pid=${paymentIntentId}`;
 
+    await Pidcid.create({ pid: paymentIntentId, cid: clientKey, userId });
     const axios = require('axios');
 
     const options = {
@@ -612,166 +596,155 @@ export const attachPaymentIntentForEvent = tryCatch(
 export const retrievePaymentIntentForEvent = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
     const { cid, pid } = req.body;
-    const userId = req.user;
+    // const userId = req.user;
 
-    try {
-      const result = await axios({
-        method: 'GET',
-        url: `https://api.paymongo.com/v1/payment_intents/${pid}?client_key=${cid}`,
-        headers: {
-          accept: 'application/json',
-          authorization: `Basic ${process.env.COURSE_PAYMONGO_KEY}`,
-        },
-      });
+    const pidCid = await Pidcid.findOne({ cid, pid });
 
-      const status = result?.data?.data.attributes.status;
-
-      if (status !== 'succeeded') {
-        throw new AppError(ERROR_HANDLER, 'Transaction not completed', 400);
-      }
-
-      // course description
-      const description =
-        result?.data?.data?.attributes?.payments[0]?.attributes?.description;
-      const eventId = description.split('/')[0];
-      const authorId = description.split('/')[1];
-      const regType = description.split('/')[2];
-      const amount = description.split('/')[3];
-      const transactionFee = description.split('/')[4];
-      const ztellarFee = description.split('/')[5];
-
-      // // payment sourse
-      const paymentSource =
-        result?.data?.data?.attributes?.payments[0]?.attributes?.source?.type;
-      // course price
-      const price =
-        result?.data?.data?.attributes?.payments[0]?.attributes?.amount;
-
-      const finalPrice = Math.floor(price / 100);
-
-      // paymongo fee
-      const num2 = result?.data?.data?.attributes?.payments[0]?.attributes?.fee;
-      const paymongoFee = Math.floor(num2 / 100);
-      // less amount
-      const lessAmount = finalPrice - paymongoFee;
-      // author fee
-      console.log(lessAmount);
-
-      // // author
-      // const course = await Product.findOne({ _id: courseId, type: 'course' });
-
-      // const author = course.author_id;
-
-      // START
-      // if course already exist on user
-      const user = await User.findOne({ _id: userId });
-
-      const productOwned = user.product_owned.filter((data: any) => {
-        const idString = data._id.toString();
-        return idString === eventId;
-      });
-
-      const productOwnedLength = productOwned.length;
-
-      if (productOwnedLength === 0) {
-        // update user
-        await User.findOneAndUpdate(
-          {
-            _id: userId,
-          },
-          {
-            $push: {
-              product_owned: {
-                _id: eventId,
-                qr_code: userId,
-                reg_type: regType,
-                product_type: 'event',
-              },
-            },
-          },
-          { new: true }
-        );
-      }
-
-      // update event
-
-      // if user already registered in course
-      const event = await Product.findOne({ _id: eventId });
-      const courseFilter = event.registered.filter((data) => {
-        return (data._id = userId);
-      });
-
-      const courseFilterLength = courseFilter.length;
-
-      console.log(courseFilterLength);
-
-      if (courseFilterLength === 0) {
-        // update product
-        await Product.findOneAndUpdate(
-          {
-            _id: eventId,
-          },
-          {
-            $push: {
-              registered: {
-                _id: userId,
-                qr_code: userId,
-                reg_type: regType,
-                product_type: 'event',
-                author_payment: amount,
-                ztellar_fee: ztellarFee,
-                payment_mode: paymentSource,
-              },
-            },
-          },
-          {
-            new: true,
-          }
-        );
-      }
-
-      // // END
-
-      // if payment record already exist
-      const paymentRecord = await Payment.findOne({
-        product_id: eventId,
-        buyer_id: userId,
-        product_type: 'event',
-        author_id: authorId,
-      });
-
-      if (paymentRecord) {
-        console.log('exist');
-      } else {
-        console.log('not exist');
-        // create payment record
-        await Payment.create({
-          author_id: authorId,
-          product_type: 'event',
-          buyer_id: userId,
-          payment_mode: paymentSource,
-          payment_source: 'paymongo',
-          base_amount: finalPrice,
-          less_amount: lessAmount,
-          author_payment: amount,
-          ztellar_fee: ztellarFee,
-          product_id: eventId,
-        });
-      }
-      const updateAuthor = await User.findOneAndUpdate(
-        { _id: authorId },
-        {
-          $inc: { author_event_balance: amount },
-        }
-      );
-
-      // if (!paymentRecord) {
-
-      // }
-
-      res.status(200).json('success');
-    } catch (err) {
+    if (!pidCid) {
       throw new AppError(ERROR_HANDLER, 'Transaction not completed', 400);
     }
+
+    const result = await axios({
+      method: 'GET',
+      url: `https://api.paymongo.com/v1/payment_intents/${pid}?client_key=${cid}`,
+      headers: {
+        accept: 'application/json',
+        authorization: `Basic ${process.env.COURSE_PAYMONGO_KEY}`,
+      },
+    });
+
+    const status = result?.data?.data.attributes.status;
+
+    if (status !== 'succeeded') {
+      throw new AppError(ERROR_HANDLER, 'Transaction not completed', 400);
+    }
+
+    const description =
+      result?.data?.data?.attributes?.payments[0]?.attributes?.description;
+    const eventId = description.split('/')[0];
+    const authorId = description.split('/')[1];
+    const regType = description.split('/')[2];
+    const baseAmount = description.split('/')[3];
+    const wholeAmount = description.split('/')[4];
+    const paymentMethod = description.split('/')[5];
+    const userId = description.split('/')[6];
+
+    let ztellarFee: any;
+
+    if (paymentMethod === 'gcash') {
+      const rate = 0.022;
+      const a = Number(wholeAmount) * rate;
+      const b = wholeAmount - a;
+      ztellarFee = parseFloat((Number(b) - Number(baseAmount)).toFixed(2));
+    }
+
+    // // author
+    // const course = await Product.findOne({ _id: courseId, type: 'course' });
+
+    // const author = course.author_id;
+
+    // START
+    // if course already exist on user
+    const user = await User.findOne({ _id: userId });
+
+    const productOwned = user.product_owned.filter((data: any) => {
+      const idString = data._id.toString();
+      return idString === eventId;
+    });
+
+    const productOwnedLength = productOwned.length;
+
+    if (productOwnedLength === 0) {
+      // update user
+      await User.findOneAndUpdate(
+        {
+          _id: userId,
+        },
+        {
+          $push: {
+            product_owned: {
+              _id: eventId,
+              qr_code: userId,
+              reg_type: regType,
+              product_type: 'event',
+            },
+          },
+        },
+        { new: true }
+      );
+    }
+
+    // update event
+
+    // if user already registered in course
+    const event = await Product.findOne({ _id: eventId });
+    const courseFilter = event.registered.filter((data) => {
+      return (data._id = userId);
+    });
+
+    const courseFilterLength = courseFilter.length;
+
+    if (courseFilterLength === 0) {
+      // update product
+      await Product.findOneAndUpdate(
+        {
+          _id: eventId,
+        },
+        {
+          $push: {
+            registered: {
+              _id: userId,
+              qr_code: userId,
+              reg_type: regType,
+              product_type: 'event',
+              author_payment: baseAmount,
+              ztellar_fee: ztellarFee,
+              payment_mode: paymentMethod,
+            },
+          },
+        },
+        {
+          new: true,
+        }
+      );
+    }
+
+    // // END
+
+    // if payment record already exist
+    const paymentRecord = await Payment.findOne({
+      product_id: eventId,
+      buyer_id: userId,
+      product_type: 'event',
+      author_id: authorId,
+    });
+
+    if (paymentRecord) {
+      console.log('exist');
+    } else {
+      console.log('not exist');
+      // create payment record
+      await Payment.create({
+        author_id: authorId,
+        product_type: 'event',
+        buyer_id: userId,
+        payment_mode: paymentMethod,
+        payment_source: 'paymongo',
+        author_payment: baseAmount,
+        ztellar_fee: ztellarFee,
+        product_id: eventId,
+      });
+    }
+    await User.findOneAndUpdate(
+      { _id: authorId },
+      {
+        $inc: { author_event_balance: baseAmount },
+      }
+    );
+
+    // DELETE PIDCID
+    await Pidcid.findByIdAndDelete(pidCid._id);
+
+    res.status(200).json('success');
   }
 );
