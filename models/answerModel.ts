@@ -8,6 +8,10 @@ const answerSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: 'User',
   },
+  question_id: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'Question',
+  },
   course_id: {
     type: mongoose.Schema.ObjectId,
     ref: 'Product',
@@ -24,6 +28,7 @@ const answerSchema = new mongoose.Schema({
     type: Number,
     default: 7,
   },
+  quiz_length: Number,
   passed: { type: Boolean, default: false },
   time_expired: Date,
   minutes_per_question: {

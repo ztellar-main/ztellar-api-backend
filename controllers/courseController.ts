@@ -9,6 +9,7 @@ import Video from '../models/videoModel';
 import User from '../models/userModel';
 import Question from '../models/questionModel';
 import Answer from '../models/answerModel';
+import { ObjectId } from 'mongodb';
 
 export interface IGetUserAuthInfoRequest extends Request {
   user: any; // or any other type
@@ -908,5 +909,146 @@ export const acquiredCoursePrivateRoute = tryCatch(
     });
 
     res.status(200).json(ifExist);
+  }
+);
+
+// NEW
+export const getOwnedCourseData = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { id } = req.query;
+    const userId = req.user;
+
+    const user = await User.findOne({ _id: userId });
+
+    const courseFindInUser = user.product_owned.find((data: any) => {
+      const dataId = data._id.toString();
+      return dataId === id.toString();
+    });
+
+    // if product exist on user
+    if (!courseFindInUser) {
+      throw new AppError(ERROR_HANDLER, 'Not yet registered', 400);
+    }
+
+    const course = await Product.findOne({ _id: id })
+      .populate({
+        path: 'course_subjects.data',
+        select: '',
+      })
+      .populate({
+        path: 'course_subjects.videos.data',
+        select: '',
+      })
+      .select('course_subjects');
+
+    if (!course) {
+      throw new AppError(ERROR_HANDLER, 'product not found', 400);
+    }
+
+    res.json(course);
+  }
+);
+
+// QUIZ START
+export const getQuizAnswer = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { questionId } = req.query;
+    const userId = req.user;
+
+    const answer = await Answer.findOne({
+      question_id: questionId,
+      user_id: userId,
+      status: false,
+    });
+
+    // get answered list
+    const answers = await Answer.find({
+      question_id: questionId,
+      user_id: userId,
+      status: true,
+    });
+
+    if (!answer) {
+      return res.json({
+        message: 'no-answer',
+        data: '',
+        answersList: answers,
+      });
+    }
+
+    const answerLength = answer.answers.length;
+
+    const questions = await Question.findOne({ _id: questionId });
+
+    let question = questions.questions[answerLength];
+
+    question.answer = undefined;
+
+    res.json({
+      message: 'answer',
+      data: question,
+      qNumber: answerLength,
+      answersList: answers,
+    });
+  }
+);
+
+// take quiz
+export const takeQuiz = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { questionId } = req.body;
+    const userId = req.user;
+
+    await Answer.create({
+      question_id: questionId,
+      user_id: userId,
+    });
+
+    res.json('success');
+  }
+);
+
+// submit answer
+export const submitAnswer = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { answer, questionId, quizData, quizNumber } = req.body;
+    const userId = req.user;
+
+    const questions = await Question.findOne({ _id: questionId });
+
+    const question = questions.questions[Number(quizNumber)];
+
+    const questionNumber = quizNumber + 1;
+
+    const correctAnswer = question.answer;
+
+    const checkAnswer = correctAnswer === answer;
+
+    const checkIfLastNumber = questionNumber === questions.questions.length;
+
+    await Answer.findOneAndUpdate(
+      {
+        question_id: questionId,
+        user_id: userId,
+        status: false,
+      },
+      {
+        $push: {
+          answers: {
+            correct: checkAnswer,
+            answer: answer,
+            correct_answer: correctAnswer,
+            question: quizData.question,
+            choices: quizData.choices,
+          },
+        },
+        $set: {
+          status: checkIfLastNumber,
+          quiz_length: questions.questions.length,
+        },
+        $inc: { score: checkAnswer ? 1 : 0 },
+      }
+    );
+    res?.json('success');
   }
 );

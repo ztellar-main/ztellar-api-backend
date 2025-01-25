@@ -35,6 +35,7 @@ import {
   getCredentialsForCreatingLive,
   getAccessTokenForLive,
   getZoomJoinUrl,
+
 } from '../controllers/productController';
 
 import { protect } from '../utils/protect';
@@ -102,5 +103,7 @@ router.get('/get-credentials-for-zoom-live', getCredentialsForCreatingLive);
 
 // get zoom join url for client
 router.get('/get-zoom-url-for-client', getZoomJoinUrl);
+
+
 
 export default router;

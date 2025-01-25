@@ -193,41 +193,29 @@ export const createCashPayment = tryCatch(
     const authorPaymentFinal = Number(priceFinal) * 0.9;
     const ztellarFeeFinal = Number(priceFinal) * 0.1;
 
-    // console.log({
-    //   authorId,
-    //   productId,
-    //   productType,
-    //   regType,
-    //   buyerId,
-    //   priceFinal,
-    //   authorPaymentFinal,
-    //   ztellarFeeFinal,
-    //   userId,
-    // });
-
-    const userUpdate = await User.findByIdAndUpdate(
-      { _id: '67386564e712651f3bd3a04f' }, //
-      {
-        $push: {
-          product_owned: {
-            _id: '66b1e778ecaa46a200a6eb83', //
-            qr_code: '67386564e712651f3bd3a04f', //
-            reg_type: 'virtual',
-            product_type: 'event',
-          },
-        },
-      },
-      { new: true, upsert: true }
-    );
-    console.log(userUpdate);
+    // const userUpdate = await User.findByIdAndUpdate(
+    //   { _id: '67386564e712651f3bd3a04f' }, //
+    //   {
+    //     $push: {
+    //       product_owned: {
+    //         _id: '66b1e778ecaa46a200a6eb83', //
+    //         qr_code: '67386564e712651f3bd3a04f', //
+    //         reg_type: 'virtual',
+    //         product_type: 'event',
+    //       },
+    //     },
+    //   },
+    //   { new: true, upsert: true }
+    // );
+    // console.log(userUpdate);
 
     const courseUpdate = await Product.findByIdAndUpdate(
       { _id: '66b1e778ecaa46a200a6eb83' },
       {
         $push: {
           registered: {
-            _id: '67386564e712651f3bd3a04f', //
-            qr_code: '67386564e712651f3bd3a04f', //
+            _id: '67917859f3ccf0639ff331b4', //
+            qr_code: '67917859f3ccf0639ff331b4', //
             reg_type: 'virtual',
             product_type: 'event',
             author_payment: 930,
@@ -245,12 +233,12 @@ export const createCashPayment = tryCatch(
       product_type: 'event',
       product_id: '66b1e778ecaa46a200a6eb83',
       reg_type: 'virtual',
-      buyer_id: '67386564e712651f3bd3a04f', //
+      buyer_id: '67917859f3ccf0639ff331b4', //
       payment_mode: 'gcash', //
       payment_source: 'paymongo',
       author_payment: 930,
       ztellar_fee: 45, //
-      date: new Date('2025-01-10T07:51:45.711Z'), //
+      date: new Date('2025-01-23T11:50:45.711Z'), //
     });
 
     const updateAuthor = await User.findOneAndUpdate(

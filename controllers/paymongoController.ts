@@ -638,23 +638,25 @@ export const retrievePaymentIntentForEvent = tryCatch(
       ztellarFee = parseFloat((Number(b) - Number(baseAmount)).toFixed(2));
     }
 
-    // // author
-    // const course = await Product.findOne({ _id: courseId, type: 'course' });
+    if (paymentMethod === 'paymaya') {
+      const rate = 0.019;
+      const a = Number(wholeAmount) * rate;
+      const b = wholeAmount - a;
+      ztellarFee = parseFloat((Number(b) - Number(baseAmount)).toFixed(2));
+    }
 
-    // const author = course.author_id;
+    // author
 
     // START
     // if course already exist on user
     const user = await User.findOne({ _id: userId });
 
-    const productOwned = user.product_owned.filter((data: any) => {
+    const productOwned = user.product_owned.find((data: any) => {
       const idString = data._id.toString();
       return idString === eventId;
     });
 
-    const productOwnedLength = productOwned.length;
-
-    if (productOwnedLength === 0) {
+    if (!productOwned) {
       // update user
       await User.findOneAndUpdate(
         {
@@ -675,16 +677,22 @@ export const retrievePaymentIntentForEvent = tryCatch(
     }
 
     // update event
+    console.log({
+      userId,
+      regType,
+      baseAmount,
+      ztellarFee,
+      paymentMethod,
+    });
 
     // if user already registered in course
     const event = await Product.findOne({ _id: eventId });
-    const courseFilter = event.registered.filter((data) => {
-      return (data._id = userId);
+    const courseFilter = event.registered.find((data) => {
+      const dataId = data._id.toString();
+      return dataId === userId;
     });
 
-    const courseFilterLength = courseFilter.length;
-
-    if (courseFilterLength === 0) {
+    if (!courseFilter) {
       // update product
       await Product.findOneAndUpdate(
         {
@@ -709,8 +717,7 @@ export const retrievePaymentIntentForEvent = tryCatch(
       );
     }
 
-    // // END
-
+    // END
     // if payment record already exist
     const paymentRecord = await Payment.findOne({
       product_id: eventId,

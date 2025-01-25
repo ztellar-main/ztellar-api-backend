@@ -35,6 +35,10 @@ import {
   getRecentState,
   ifUserPassedAllTheSubjects,
   acquiredCoursePrivateRoute,
+  getOwnedCourseData,
+  getQuizAnswer,
+  takeQuiz,
+  submitAnswer,
 } from '../controllers/courseController';
 
 import { protect } from '../utils/protect';
@@ -95,5 +99,13 @@ router.get(
   protect,
   acquiredCoursePrivateRoute
 );
+
+// NEW
+router.get('/get-owned-course', protect, getOwnedCourseData);
+
+// get course quiz answer
+router.get('/get-course-quiz-answer', protect, getQuizAnswer);
+router.post('/take-quiz', protect, takeQuiz);
+router.post('/submit-answer', protect, submitAnswer);
 
 export default router;
