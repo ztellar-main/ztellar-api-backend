@@ -14,6 +14,10 @@ import {
   attachPaymentIntentForEvent,
   retrievePaymentIntentForEvent,
   createPaymentIntentForEvent,
+  createPaymentIntentForCourse,
+  createPaymentMethodForcourse,
+  attachPaymentIntentForCourse,
+  paymongoWebhookForCourse,
 } from '../controllers/paymongoController';
 
 import { protect } from '../utils/protect';
@@ -56,5 +60,26 @@ router.put(
   protect,
   retrievePaymentIntentForEvent
 );
+
+// course
+router.post(
+  '/create-payment-intent-for-course',
+  protect,
+  createPaymentIntentForCourse
+);
+
+router.post(
+  '/create-payment-method-for-course',
+  protect,
+  createPaymentMethodForcourse
+);
+
+router.post(
+  '/attach-payment-intent-for-course',
+  protect,
+  attachPaymentIntentForCourse
+);
+
+router.post('/course-webhook', paymongoWebhookForCourse);
 
 export default router;

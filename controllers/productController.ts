@@ -668,6 +668,7 @@ import { sponsorValue } from '../utils/sponsorValue';
 import { sponsorReservationEmailEvent } from '../utils/sponsorReservationEmailEvent';
 import ZoomMeeting from '../models/ZoomMeeting';
 import axios from 'axios';
+import Payment from '../models/paymentModel';
 export const saveBoot = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
     const newSponsor = await Product.findOneAndUpdate(
@@ -1147,5 +1148,137 @@ export const getZoomJoinUrl = tryCatch(
     }).select('joinUrl');
 
     res.json(meetingData);
+  }
+);
+
+// get zoom join url for client
+export const getEventDataForCashLane = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { id } = req.query;
+
+    const event = await Product.findOne({ _id: id });
+
+    res.json(event);
+  }
+);
+
+// event paycash
+export const eventPayCash = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { userId, eventId, cashValue } = req.body;
+    const regType = cashValue.split('/')[0];
+    const price = Number(cashValue.split('/')[1]);
+
+    const ztellarFee = price * 0.07;
+    const authorFee = price - ztellarFee;
+
+    console.log(price);
+
+    // UDPATE USER
+    const user = await User.findOne({ _id: userId });
+
+    const productOwned = user.product_owned.find((data: any) => {
+      const idString = data._id.toString();
+      return idString === eventId;
+    });
+
+    if (productOwned) {
+      throw new AppError(
+        'User is already registered',
+        'User is already registered',
+        400
+      );
+    }
+
+    if (!productOwned) {
+      await User.findOneAndUpdate(
+        {
+          _id: userId,
+        },
+        {
+          $push: {
+            product_owned: {
+              _id: eventId,
+              qr_code: userId,
+              product_type: 'event',
+              reg_type: 'face_to_face',
+            },
+          },
+        },
+        { new: true, upsert: false }
+      );
+    }
+
+    // UDPATE COURSE
+    const event = await Product.findOne({ _id: eventId });
+    const courseFilter = event.registered.find((data) => {
+      const dataId = data._id.toString();
+      return dataId === userId;
+    });
+
+    if (!courseFilter) {
+      // update product
+      await Product.findOneAndUpdate(
+        {
+          _id: eventId,
+        },
+        {
+          $push: {
+            registered: {
+              _id: userId,
+              qr_code: userId,
+              product_type: 'event',
+              author_payment: Math.floor(authorFee),
+              ztellar_fee: Math.floor(ztellarFee),
+              payment_mode: regType,
+            },
+          },
+        },
+        {
+          new: true,
+          upsert: false,
+        }
+      );
+
+      // UPDATE AUTHOR BALANCE
+      await User.findOneAndUpdate(
+        { _id: event.author_id },
+        {
+          $inc: { author_event_balance: authorFee },
+        },
+        {
+          new: true,
+          upsert: false,
+        }
+      );
+    }
+
+    // CREATE PAYMENT RECORD
+    // if payment record already exist
+    const paymentRecord = await Payment.findOne({
+      product_id: eventId,
+      buyer_id: userId,
+      product_type: 'event',
+      author_id: event?.author_id,
+    });
+
+    if (paymentRecord) {
+      console.log('exist');
+    } else {
+      console.log('not exist');
+      // create payment record
+      await Payment.create({
+        author_id: event?.author_id,
+        product_type: 'event',
+        buyer_id: userId,
+        payment_mode: regType,
+        payment_source: 'paymongo',
+        author_payment: authorFee,
+        ztellar_fee: ztellarFee,
+        product_id: eventId,
+      });
+    }
+
+    return res.status(200).json('success');
   }
 );

@@ -649,7 +649,7 @@ export const saveAnswer = tryCatch(
     }
 
     // if quiz passed
-    if (currentScore >= answerFind?.passing_score) {
+    if (currentScore >= answerFind?.passing_rate) {
       currentPassed = true;
     }
 
@@ -925,6 +925,17 @@ export const getOwnedCourseData = tryCatch(
       return dataId === id.toString();
     });
 
+    const courseSubscriptionExpired = user.product_owned
+      .filter((data: any) => data._id.toString() === id)
+      .find((data: any) => {
+        return data?.expiry <= Date.now();
+      });
+
+    // if subscription expires
+    if (courseSubscriptionExpired) {
+      throw new AppError(ERROR_HANDLER, 'Not yet registered', 400);
+    }
+
     // if product exist on user
     if (!courseFindInUser) {
       throw new AppError(ERROR_HANDLER, 'Not yet registered', 400);
@@ -939,13 +950,22 @@ export const getOwnedCourseData = tryCatch(
         path: 'course_subjects.videos.data',
         select: '',
       })
-      .select('course_subjects');
+      .select('course_subjects title course_certificate_properties');
 
     if (!course) {
       throw new AppError(ERROR_HANDLER, 'product not found', 400);
     }
 
-    res.json(course);
+    const recentClicked = user.product_owned.find((data: any) => {
+      const objectIdToString = data._id.toString();
+      return objectIdToString === id;
+    });
+
+    res.json({
+      course,
+      recentClicked: recentClicked.recent_clicked,
+      cert: course.course_certificate_properties,
+    });
   }
 );
 
@@ -989,6 +1009,7 @@ export const getQuizAnswer = tryCatch(
       data: question,
       qNumber: answerLength,
       answersList: answers,
+      answerExpiryTime: answer.time_expired,
     });
   }
 );
@@ -996,12 +1017,23 @@ export const getQuizAnswer = tryCatch(
 // take quiz
 export const takeQuiz = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
-    const { questionId } = req.body;
+    const { questionId, courseId, subjectId } = req.body;
     const userId = req.user;
+
+    const question = await Question.findOne({ _id: questionId });
+
+    const questionTimer = question.time_per_question_in_minutes;
+    const now = new Date(); // Current date and time
+    const questionExpiry = new Date(
+      now.getTime() + questionTimer * 60 * 1000 + 2000
+    );
 
     await Answer.create({
       question_id: questionId,
       user_id: userId,
+      time_expired: questionExpiry,
+      course_id: courseId,
+      subject_id: subjectId,
     });
 
     res.json('success');
@@ -1024,7 +1056,28 @@ export const submitAnswer = tryCatch(
 
     const checkAnswer = correctAnswer === answer;
 
+    // question expiry
+    const questionTimer = questions.time_per_question_in_minutes;
+    const now = new Date(); // Current date and time
+    const questionExpiry = new Date(
+      now.getTime() + questionTimer * 60 * 1000 + 2000
+    );
+
+    // check if user is already in the last number of the quiz
     const checkIfLastNumber = questionNumber === questions.questions.length;
+
+    // check if user passed the quiz
+    const passingRate = questions.passing_rate;
+    const passingRateValue = questions.questions.length * passingRate;
+    const passingRateValueRounded = Math.ceil(passingRateValue);
+    const answerGetScore = await Answer.findOne({
+      question_id: questionId,
+      user_id: userId,
+      status: false,
+    });
+    const score = answerGetScore.score;
+    const finalScore = checkAnswer ? score + 1 : score;
+    const ifPassed = finalScore >= passingRateValueRounded;
 
     await Answer.findOneAndUpdate(
       {
@@ -1045,10 +1098,165 @@ export const submitAnswer = tryCatch(
         $set: {
           status: checkIfLastNumber,
           quiz_length: questions.questions.length,
+          passed: ifPassed,
+          time_expired: questionExpiry,
         },
         $inc: { score: checkAnswer ? 1 : 0 },
       }
     );
     res?.json('success');
+  }
+);
+
+// ifPassed
+export const passedAnswersList = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const userId = req.user;
+    const { courseId } = req.query;
+
+    const checkPassedSubjects = async (courseId: any) => {
+      const result = await Answer.aggregate([
+        // Match documents by the provided course_id and where passed is true
+        {
+          $match: {
+            course_id: new mongoose.Types.ObjectId(courseId),
+            user_id: new mongoose.Types.ObjectId(userId),
+            passed: true,
+          },
+        },
+
+        // Group by subject_id and count the number of passed answers
+        {
+          $group: {
+            _id: '$subject_id',
+            count: { $sum: 1 }, // Count the number of passed answers per subject
+          },
+        },
+
+        // Populate subject_id (join with CourseSubject collection)
+        {
+          $lookup: {
+            from: 'coursesubjects', // The collection name
+            localField: '_id', // subject_id from the $group stage
+            foreignField: '_id', // Match with _id of CourseSubject
+            as: 'subjectDetails',
+          },
+        },
+
+        // Unwind subjectDetails to ensure we get a flat structure,
+        // but keep documents with no matches in subjectDetails
+        {
+          $unwind: {
+            path: '$subjectDetails',
+            // preserveNullAndEmptyArrays: true, // Keep documents even if subjectDetails is empty
+          },
+        },
+
+        // Project the relevant fields to return
+        {
+          $project: {
+            _id: 0, // Exclude the default _id from output
+            subject_id: '$_id',
+            subject_title: '$subjectDetails.title', // Uncomment if you want the subject title
+            course_id: '$subjectDetails.course_id', // Uncomment if you want the course ID
+            passed_count: '$count', // Include the count of passed answers
+          },
+        },
+      ]);
+
+      return result;
+    };
+
+    const pass = await checkPassedSubjects(courseId)
+      .then((result) => {
+        return result;
+      })
+      .catch((err) => {
+        return err;
+      });
+    // console.log(pass);
+
+    const numberOfSubjectsFind = await Product.findOne({
+      _id: courseId,
+    })
+      .select(
+        'course_subjects.data course_subjects._id course_subjects.questions'
+      )
+      .populate({ path: 'course_subjects.data', select: 'title' });
+
+    const numberOfSubjects = numberOfSubjectsFind.course_subjects;
+
+    // Mapping through numberOfSubjects to check if the subject exists in pass array
+    const result = numberOfSubjects
+      .filter((subject: any) => subject.questions)
+      .map((subject: any) => {
+        const isPassed = pass.some((p: any) => {
+          const a = p.subject_id.toString();
+          const b = subject.data._id.toString();
+          return a === b;
+        });
+
+        return {
+          subject_id: subject?.data?._id,
+          title: subject?.data?.title,
+          status: isPassed ? 'Passed' : 'Not-Yet-Passed',
+        };
+      });
+
+    const isAllPassed = result.find(
+      (data: any) => data.status === 'Not-Yet-Passed'
+    );
+
+    let allPassed;
+
+    if (!isAllPassed) {
+      allPassed = true;
+    } else {
+      allPassed = false;
+    }
+
+    res.status(200).json({ data: result, allPassed });
+  }
+);
+
+// buy course credentials
+export const buycourseCredentials = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { courseId } = req.query;
+
+    const course = await Product.findOne({ _id: courseId });
+
+    res.json(course);
+  }
+);
+
+// update recent clicked
+export const updateRecentClicked = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const userId = req.user;
+    const { userStates, courseId } = req.body;
+
+    const updatedUser = await User.findOneAndUpdate(
+      { _id: userId },
+      { $set: { 'product_owned.$[e1].recent_clicked': userStates } },
+      {
+        arrayFilters: [{ 'e1._id': courseId }],
+        upsert: true,
+        new: true,
+      }
+    );
+
+    res.json('success');
+  }
+);
+
+// get answer data
+export const getAnswerData = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { id } = req.query;
+
+    const answer = await Answer.findOne({ _id: id });
+
+    res.json(answer);
   }
 );

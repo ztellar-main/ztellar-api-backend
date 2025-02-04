@@ -755,3 +755,313 @@ export const retrievePaymentIntentForEvent = tryCatch(
     res.status(200).json('success');
   }
 );
+
+// create payment intent for course
+export const createPaymentIntentForCourse = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const userId = req.user;
+
+    const { amount, courseId, authorId, months, paymentMethod, baseAmount } =
+      req.body;
+
+    const finalDescription = `course/${courseId}/${authorId}/${months}/${amount}/${baseAmount}/${paymentMethod}/${userId}`;
+
+    const finalAmount = Math.ceil(amount);
+
+    const toPay = Number(`${finalAmount}00`);
+
+    const options = {
+      method: 'POST',
+      url: 'https://api.paymongo.com/v1/payment_intents',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        authorization: `Basic ${process.env.COURSE_PAYMONGO_KEY}`,
+      },
+      data: {
+        data: {
+          attributes: {
+            amount: toPay,
+            payment_method_allowed: [
+              'qrph',
+              'card',
+              'dob',
+              'paymaya',
+              'billease',
+              'gcash',
+              'grab_pay',
+            ],
+            payment_method_options: { card: { request_three_d_secure: 'any' } },
+            currency: 'PHP',
+            capture_type: 'automatic',
+            description: finalDescription,
+          },
+        },
+      },
+    };
+
+    axios
+      .request(options)
+      .then(function (response) {
+        res.status(200).json(response.data);
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
+  }
+);
+
+// CREATE PAYMENT METHOD FOR COURSE
+export const createPaymentMethodForcourse = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { name, email, contact, paymentMethod } = req.body;
+
+    const options = {
+      method: 'POST',
+      url: 'https://api.paymongo.com/v1/payment_methods',
+      headers: {
+        accept: 'application/json',
+        'Content-Type': 'application/json',
+        authorization: `Basic ${process.env.COURSE_PAYMONGO_KEY}`,
+      },
+      data: {
+        data: {
+          attributes: {
+            details: {
+              card_number: '',
+              exp_month: '',
+              exp_year: '',
+              cvc: '',
+              bank_code: 'test_bank_two ',
+            },
+            billing: { name: name, email: email, phone: contact },
+            type: paymentMethod,
+          },
+        },
+      },
+    };
+
+    axios
+      .request(options)
+      .then(function (response) {
+        res.status(200).json(response.data);
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
+  }
+);
+
+// ATTACH PAYMENT INTENT FOR COURSE
+export const attachPaymentIntentForCourse = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const userId = req.user;
+    const { paymentMethodId, paymentIntentId, clientKey } = req.body;
+
+    const redirectUrl = `${process.env.COURSE_PAYMONGO_REDIRECT}`;
+
+    await Pidcid.create({ pid: paymentIntentId, cid: clientKey, userId });
+    const axios = require('axios');
+
+    const options = {
+      method: 'POST',
+      url: `https://api.paymongo.com/v1/payment_intents/${paymentIntentId}/attach`,
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        authorization: `Basic ${process.env.COURSE_PAYMONGO_KEY}`,
+      },
+      data: {
+        data: {
+          attributes: {
+            payment_method: paymentMethodId,
+            return_url: redirectUrl,
+            client_key: clientKey,
+          },
+        },
+      },
+    };
+
+    axios
+      .request(options)
+      .then(function (response) {
+        const url = response.data.data.attributes.next_action.redirect.url;
+
+        res.status(200).json(url);
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
+  }
+);
+
+export const paymongoWebhookForCourse = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const event = req.body;
+
+    const description = event?.data?.attributes?.data?.attributes?.description;
+
+    console.log(description);
+
+    const productType = description.split('/')[0];
+
+    if (!event || !event.data || !event.data.attributes) {
+      return res.status(400).send('Invalid Webhook Data');
+    }
+
+    const eventType = event.data.attributes.type;
+
+    switch (eventType) {
+      case 'payment.paid':
+        if (productType === 'course') {
+          const courseId = description.split('/')[1];
+          const authorId = description.split('/')[2];
+          const months = description.split('/')[3];
+          const amount = description.split('/')[4];
+          const baseAmount = description.split('/')[5];
+          const paymentMethod = description.split('/')[6];
+          const userId = description.split('/')[7];
+
+          let ztellarFee: any;
+          const authorFee = Number(baseAmount) * 0.6;
+
+          // COURSE
+          if (paymentMethod === 'gcash') {
+            const rate = 0.022;
+            const a = Number(amount) * rate;
+            const b = Number(amount) - a;
+            const authorFeeA = Number(baseAmount) * 0.6;
+
+            ztellarFee = parseFloat(
+              (Number(b) - Number(authorFeeA)).toFixed(2)
+            );
+          }
+
+          if (paymentMethod === 'paymaya') {
+            const rate = 0.019;
+            const a = Number(amount) * rate;
+            const b = Number(amount) - a;
+            const authorFeeA = Number(baseAmount) * 0.6;
+
+            ztellarFee = parseFloat(
+              (Number(b) - Number(authorFeeA)).toFixed(2)
+            );
+          }
+
+          const expiryDate = new Date();
+          expiryDate.setMonth(expiryDate.getMonth() + Number(months));
+
+          // UDPATE USER
+          const user = await User.findOne({ _id: userId });
+
+          const productOwned = user.product_owned.find((data: any) => {
+            const idString = data._id.toString();
+            return idString === courseId;
+          });
+
+          if (!productOwned) {
+            await User.findOneAndUpdate(
+              {
+                _id: userId,
+              },
+              {
+                $push: {
+                  product_owned: {
+                    _id: courseId,
+                    qr_code: userId,
+                    expiry: expiryDate,
+                    product_type: 'course',
+                  },
+                },
+              },
+              { new: true, upsert: false }
+            );
+          }
+
+          // UDPATE COURSE
+          const event = await Product.findOne({ _id: courseId });
+          const courseFilter = event.registered.find((data) => {
+            const dataId = data._id.toString();
+            return dataId === userId;
+          });
+
+          if (!courseFilter) {
+            // update product
+            await Product.findOneAndUpdate(
+              {
+                _id: courseId,
+              },
+              {
+                $push: {
+                  registered: {
+                    _id: userId,
+                    qr_code: userId,
+                    product_type: 'course',
+                    author_payment: authorFee,
+                    ztellar_fee: ztellarFee,
+                    payment_mode: paymentMethod,
+                    expiry: expiryDate,
+                  },
+                },
+              },
+              {
+                new: true,
+                upsert: false,
+              }
+            );
+
+            // UPDATE AUTHOR BALANCE
+            await User.findOneAndUpdate(
+              { _id: authorId },
+              {
+                $inc: { author_event_balance: authorFee },
+              },
+              {
+                new: true,
+                upsert: false,
+              }
+            );
+          }
+
+          // CREATE PAYMENT RECORD
+          // if payment record already exist
+          const paymentRecord = await Payment.findOne({
+            product_id: courseId,
+            buyer_id: userId,
+            product_type: 'course',
+            author_id: authorId,
+          });
+
+          if (paymentRecord) {
+            console.log('exist');
+          } else {
+            console.log('not exist');
+            // create payment record
+            await Payment.create({
+              author_id: authorId,
+              product_type: 'course',
+              buyer_id: userId,
+              payment_mode: paymentMethod,
+              payment_source: 'paymongo',
+              author_payment: authorFee,
+              ztellar_fee: ztellarFee,
+              product_id: courseId,
+            });
+          }
+
+          return res.status(200).json('success');
+        }
+        break;
+      case 'payment.failed':
+        console.log('❌ Payment Failed:', event.data);
+        break;
+      case 'source.chargeable':
+        console.log('⚡ Source Chargeable:', event.data);
+        break;
+      default:
+        console.log('🔔 Unknown Event:', event.data);
+    }
+
+    res.status(200).json('success');
+  }
+);

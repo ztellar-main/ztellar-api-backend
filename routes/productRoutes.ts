@@ -35,7 +35,8 @@ import {
   getCredentialsForCreatingLive,
   getAccessTokenForLive,
   getZoomJoinUrl,
-
+  getEventDataForCashLane,
+  eventPayCash,
 } from '../controllers/productController';
 
 import { protect } from '../utils/protect';
@@ -104,6 +105,10 @@ router.get('/get-credentials-for-zoom-live', getCredentialsForCreatingLive);
 // get zoom join url for client
 router.get('/get-zoom-url-for-client', getZoomJoinUrl);
 
+// get event data for cash lane
+router.get('/get-event-data-for-cash-lane', protect, getEventDataForCashLane);
 
+// create event cash payment
+router.put('/create-event-cash', protect, eventPayCash);
 
 export default router;

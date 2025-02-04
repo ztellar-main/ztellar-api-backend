@@ -55,6 +55,7 @@ const productSchema = new mongoose.Schema(
           type: mongoose.Schema.ObjectId,
           ref: 'User',
         },
+        expiry: Date,
         qr_code: String,
         reg_type: String,
         product_type: String,
@@ -236,6 +237,35 @@ const productSchema = new mongoose.Schema(
       value: String,
     },
     live_access_id: String,
+    coursePrices: [
+      {
+        price: Number,
+        months: Number,
+      },
+    ],
+    course_certificate_properties: {
+      left: Number,
+      top: Number,
+      font: Number,
+      image: String,
+    },
+    cash_payment_details: [
+      {
+        cash_type: String,
+        price: Number,
+      },
+    ],
+    event_certificate_data: [
+      {
+        title: String,
+        top: String,
+        left: String,
+        font: String,
+        image_url: String,
+        font_color: String,
+        reg_type: String,
+      },
+    ],
   },
   { timestamps: true }
 );

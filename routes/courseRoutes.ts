@@ -39,6 +39,10 @@ import {
   getQuizAnswer,
   takeQuiz,
   submitAnswer,
+  passedAnswersList,
+  buycourseCredentials,
+  updateRecentClicked,
+  getAnswerData,
 } from '../controllers/courseController';
 
 import { protect } from '../utils/protect';
@@ -107,5 +111,15 @@ router.get('/get-owned-course', protect, getOwnedCourseData);
 router.get('/get-course-quiz-answer', protect, getQuizAnswer);
 router.post('/take-quiz', protect, takeQuiz);
 router.post('/submit-answer', protect, submitAnswer);
+router.get('/passed-answers-list', protect, passedAnswersList);
+
+// buy course
+router.get('/get-buy-course-credentials', protect, buycourseCredentials);
+
+// recent clicked update
+router.put('/update-recent-clicked', protect, updateRecentClicked);
+
+// get answer data
+router.get('/get-answer-data', protect, getAnswerData);
 
 export default router;

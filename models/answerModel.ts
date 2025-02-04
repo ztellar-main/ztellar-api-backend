@@ -24,9 +24,9 @@ const answerSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  passing_score: {
+  passing_rate: {
     type: Number,
-    default: 7,
+    default: 0.75,
   },
   quiz_length: Number,
   passed: { type: Boolean, default: false },

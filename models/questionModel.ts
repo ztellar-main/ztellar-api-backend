@@ -23,6 +23,10 @@ const questionSchema = new mongoose.Schema({
     type: Number,
     default: 5,
   },
+  passing_rate: {
+    type: Number,
+    default: 0.75,
+  },
 });
 
 const Question = mongoose.model('Question', questionSchema);

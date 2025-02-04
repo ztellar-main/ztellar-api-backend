@@ -42,9 +42,24 @@ const userSchema = new mongoose.Schema(
           type: mongoose.Schema.ObjectId,
           ref: 'Product',
         },
+        recent_clicked: {
+          component: String,
+          subject: {
+            subjectId: String,
+            subjectTitle: String,
+            subjectMainId: String,
+          },
+          quizId: String,
+          video: {
+            videoTitle: String,
+            videoUrl: String,
+            videoId: String,
+          },
+        },
         qr_code: String,
         reg_type: String,
         product_type: String,
+        expiry: Date,
       },
     ],
     fully_verify: {
