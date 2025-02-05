@@ -770,44 +770,46 @@ export const createPaymentIntentForCourse = tryCatch(
 
     const toPay = Number(`${finalAmount}00`);
 
-    const options = {
-      method: 'POST',
-      url: 'https://api.paymongo.com/v1/payment_intents',
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
-        authorization: `Basic ${process.env.COURSE_PAYMONGO_KEY}`,
-      },
-      data: {
-        data: {
-          attributes: {
-            amount: toPay,
-            payment_method_allowed: [
-              'qrph',
-              'card',
-              'dob',
-              'paymaya',
-              'billease',
-              'gcash',
-              'grab_pay',
-            ],
-            payment_method_options: { card: { request_three_d_secure: 'any' } },
-            currency: 'PHP',
-            capture_type: 'automatic',
-            description: finalDescription,
-          },
-        },
-      },
-    };
+    console.log({ toPay });
 
-    axios
-      .request(options)
-      .then(function (response) {
-        res.status(200).json(response.data);
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
+    // const options = {
+    //   method: 'POST',
+    //   url: 'https://api.paymongo.com/v1/payment_intents',
+    //   headers: {
+    //     accept: 'application/json',
+    //     'content-type': 'application/json',
+    //     authorization: `Basic ${process.env.COURSE_PAYMONGO_KEY}`,
+    //   },
+    //   data: {
+    //     data: {
+    //       attributes: {
+    //         amount: toPay,
+    //         payment_method_allowed: [
+    //           'qrph',
+    //           'card',
+    //           'dob',
+    //           'paymaya',
+    //           'billease',
+    //           'gcash',
+    //           'grab_pay',
+    //         ],
+    //         payment_method_options: { card: { request_three_d_secure: 'any' } },
+    //         currency: 'PHP',
+    //         capture_type: 'automatic',
+    //         description: finalDescription,
+    //       },
+    //     },
+    //   },
+    // };
+
+    // axios
+    //   .request(options)
+    //   .then(function (response) {
+    //     res.status(200).json(response.data);
+    //   })
+    //   .catch(function (error) {
+    //     console.error(error);
+    //   });
   }
 );
 
