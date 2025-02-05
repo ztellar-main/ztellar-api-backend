@@ -266,6 +266,7 @@ const productSchema = new mongoose.Schema(
         reg_type: String,
       },
     ],
+    event_certificate_download_date: Date,
   },
   { timestamps: true }
 );
