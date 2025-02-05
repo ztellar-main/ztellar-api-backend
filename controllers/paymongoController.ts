@@ -770,7 +770,15 @@ export const createPaymentIntentForCourse = tryCatch(
 
     const toPay = Number(`${finalAmount}00`);
 
-    console.log({ toPay });
+    console.log({
+      toPay,
+      amount,
+      courseId,
+      authorId,
+      months,
+      paymentMethod,
+      baseAmount,
+    });
 
     // const options = {
     //   method: 'POST',
