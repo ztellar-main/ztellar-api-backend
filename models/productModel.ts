@@ -267,6 +267,19 @@ const productSchema = new mongoose.Schema(
       },
     ],
     event_certificate_download_date: Date,
+    event_quiz_form: [
+      {
+        title: String,
+        url: String,
+        quiz_date_start: Date,
+      },
+    ],
+    programs: [
+      {
+        title: String,
+        url: String,
+      },
+    ],
   },
   { timestamps: true }
 );
