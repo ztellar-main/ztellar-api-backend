@@ -56,7 +56,7 @@ app.get('/test', (req: Request, res: Response, next: NextFunction) => {
 });
 
 app.get('/samsan', (req, res) => {
-  res.send('SAMPLE');
+  res.send('BILAT');
 });
 
 // routes
@@ -65,7 +65,6 @@ import productRouter from './routes/productRoutes';
 import paymongoRoutes from './routes/paymongoRoutes';
 import paymentRoutes from './routes/paymentRoutes';
 import feedbackRoutes from './routes/feedbackRoutes';
-import User from './models/userModel';
 import privateVideoRoutes from './routes/privateVideoRoutes';
 import authorRoutes from './routes/authorRoutes';
 import courseRoutes from './routes/courseRoutes';
