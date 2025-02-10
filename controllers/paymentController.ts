@@ -194,12 +194,12 @@ export const createCashPayment = tryCatch(
     const ztellarFeeFinal = Number(priceFinal) * 0.1;
 
     const userUpdate = await User.findByIdAndUpdate(
-      { _id: '67a027d5c11b631324a03a3b' }, //
+      { _id: '67a4b380b7053675b57b8c31' }, //
       {
         $push: {
           product_owned: {
             _id: '66b1e778ecaa46a200a6eb83', //
-            qr_code: '67a027d5c11b631324a03a3b', //
+            qr_code: '67a4b380b7053675b57b8c31', //
             reg_type: 'virtual',
             product_type: 'event',
           },
@@ -213,14 +213,14 @@ export const createCashPayment = tryCatch(
       {
         $push: {
           registered: {
-            _id: '67a027d5c11b631324a03a3b', //
-            qr_code: '67a027d5c11b631324a03a3b', //
+            _id: '67a4b380b7053675b57b8c31', //
+            qr_code: '67a4b380b7053675b57b8c31', //
             reg_type: 'virtual',
             product_type: 'event',
             author_payment: 1000,
             ztellar_fee: 46.46,
             payment_mode: 'gcash', //
-            date: new Date('2025-02-03T07:51:45.711Z'), //
+            date: new Date('2025-02-07T07:51:45.711Z'), //
           },
         },
       },
@@ -232,12 +232,12 @@ export const createCashPayment = tryCatch(
       product_type: 'event',
       product_id: '66b1e778ecaa46a200a6eb83',
       reg_type: 'virtual',
-      buyer_id: '67a027d5c11b631324a03a3b', //
-      payment_mode: 'gcash', //
+      buyer_id: '67a4b380b7053675b57b8c31', //
+      payment_mode: 'cash', //
       payment_source: 'paymongo',
       author_payment: 1000,
       ztellar_fee: 46.46, //
-      date: new Date('2025-02-03T11:50:45.711Z'), //
+      date: new Date('2025-02-07T11:50:45.711Z'), //
     });
 
     const updateAuthor = await User.findOneAndUpdate(
@@ -246,6 +246,8 @@ export const createCashPayment = tryCatch(
         $inc: { author_event_balance: 1000 },
       }
     );
+
+    console.log(updateAuthor);
 
     res.status(201).json('success');
   }

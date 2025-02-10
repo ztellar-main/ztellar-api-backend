@@ -79,10 +79,11 @@ export const getEmail = tryCatch(async (req: Request, res: Response) => {
 // VERIFY EMAIL AND SIGNUP
 export const verifyEmailandSignup = tryCatch(
   async (req: Request, res: Response) => {
-    const { email, fname, lname, mobileNumber, password, otp } = req.body;
+    const { email, fname, lname, mobileNumber, password, otp, mname } =
+      req.body;
     const dateNow = new Date(Date.now());
 
-    if (!email || !fname || !lname || !mobileNumber || !password) {
+    if (!email || !fname || !lname || !mobileNumber || !password || !mname) {
       throw new AppError(
         EMAIL_DOES_NOT_EXIST,
         'Something went wrong please sign up again.',
@@ -123,6 +124,7 @@ export const verifyEmailandSignup = tryCatch(
       fname,
       lname,
       verify: true,
+      mname,
     });
 
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
