@@ -87,7 +87,7 @@ app.use('/api/reminder', reminderRoutes);
 
 // Schedule a cron job to run every minute
 // Study reminder
-cron.schedule('*/10 * * * * *', async () => {
+cron.schedule('* * * * *', async () => {
   const h = new Date(Date.now()).getHours();
   const m = new Date(Date.now()).getMinutes();
 
