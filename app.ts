@@ -108,7 +108,7 @@ cron.schedule('*/10 * * * * *', async () => {
     days: { $in: [dayOfWeek] },
   });
 
-  // console.log({ h, m, dayOfWeek });
+  console.log({ h, m, dayOfWeek });
 
   findReminder.map(async (reminder) => {
     const isSameDate = (inputDate: any) => {
