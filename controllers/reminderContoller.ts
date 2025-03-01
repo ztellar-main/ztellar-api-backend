@@ -18,8 +18,20 @@ export const createReminder = tryCatch(
     const email = user?.email;
     const name = `${user.fname} ${user.lname}`;
 
-    const hours = time.split(':')[0];
-    const minutes = time.split(':')[1];
+    const [hours, minutes] = time.split(':').map(Number);
+
+    const now1 = new Date();
+    const localDate = new Date(
+      now1.getFullYear(),
+      now1.getMonth(),
+      now1.getDate(),
+      hours,
+      minutes
+    );
+    // Convert to UTC
+    const utcHours = localDate.getUTCHours();
+    const utcMinutes = localDate.getUTCMinutes();
+
     const months = expiry.split(' ')[0];
 
     const now = new Date();
@@ -32,8 +44,8 @@ export const createReminder = tryCatch(
     }
 
     const newReminder = await CourseReminders.create({
-      hours,
-      minutes,
+      hours: utcHours,
+      minutes: utcMinutes,
       days,
       exp: now,
       email,
@@ -58,8 +70,23 @@ export const updateReminder = tryCatch(
     const email = user?.email;
     const name = `${user.fname} ${user.lname}`;
 
-    const hours = time.split(':')[0];
-    const minutes = time.split(':')[1];
+    // const hours = time.split(':')[0];
+    // const minutes = time.split(':')[1];
+
+    const [hours, minutes] = time.split(':').map(Number);
+
+    const now1 = new Date();
+    const localDate = new Date(
+      now1.getFullYear(),
+      now1.getMonth(),
+      now1.getDate(),
+      hours,
+      minutes
+    );
+    // Convert to UTC
+    const utcHours = localDate.getUTCHours();
+    const utcMinutes = localDate.getUTCMinutes();
+
     const months = expiry.split(' ')[0];
 
     const now = new Date();
@@ -77,8 +104,8 @@ export const updateReminder = tryCatch(
       },
       {
         $set: {
-          hours,
-          minutes,
+          hours: utcHours,
+          minutes: utcMinutes,
           days,
           exp: now,
           email,
