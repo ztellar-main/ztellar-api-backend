@@ -91,6 +91,8 @@ cron.schedule('*/10 * * * * *', async () => {
   const h = new Date(Date.now()).getHours();
   const m = new Date(Date.now()).getMinutes();
 
+  console.log('SAMPLE RUNNING');
+
   const days = [
     'Sunday',
     'Monday',
