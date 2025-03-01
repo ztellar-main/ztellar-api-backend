@@ -72,24 +72,8 @@ export const updateReminder = tryCatch(
     const email = user?.email;
     const name = `${user.fname} ${user.lname}`;
 
-    // const hours = time.split(':')[0];
-    // const minutes = time.split(':')[1];
-
-    const [hours, minutes] = time.split(':').map(Number);
-
-    const now1 = new Date();
-    const localDate = new Date(
-      now1.getFullYear(),
-      now1.getMonth(),
-      now1.getDate(),
-      hours,
-      minutes
-    );
-    // Convert to UTC
-    const utcHours = localDate.getUTCHours();
-    const utcMinutes = localDate.getUTCMinutes();
-
-    console.log({ utcHours, utcMinutes });
+    const hours = time.split(':')[0];
+    const minutes = time.split(':')[1];
 
     const months = expiry.split(' ')[0];
 
@@ -108,8 +92,8 @@ export const updateReminder = tryCatch(
       },
       {
         $set: {
-          hours: utcHours,
-          minutes: utcMinutes,
+          hours,
+          minutes,
           days,
           exp: now,
           email,
