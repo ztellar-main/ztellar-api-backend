@@ -280,6 +280,17 @@ const productSchema = new mongoose.Schema(
         url: String,
       },
     ],
+    objectives: [
+      {
+        title: String,
+      },
+    ],
+    event_programs: [
+      {
+        title: String,
+        url: String,
+      },
+    ],
   },
   { timestamps: true }
 );

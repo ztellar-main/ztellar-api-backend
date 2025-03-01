@@ -10,6 +10,7 @@ import User from '../models/userModel';
 import Question from '../models/questionModel';
 import Answer from '../models/answerModel';
 import { ObjectId } from 'mongodb';
+import CourseReminders from '../models/courseReminder';
 
 export interface IGetUserAuthInfoRequest extends Request {
   user: any; // or any other type
@@ -961,10 +962,17 @@ export const getOwnedCourseData = tryCatch(
       return objectIdToString === id;
     });
 
+    // get course user reminder
+    const reminder = await CourseReminders.findOne({
+      course_id: id,
+      user_id: userId,
+    });
+
     res.json({
       course,
       recentClicked: recentClicked.recent_clicked,
       cert: course.course_certificate_properties,
+      reminder,
     });
   }
 );

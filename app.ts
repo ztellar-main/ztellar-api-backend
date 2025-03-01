@@ -10,6 +10,8 @@ import { Request, Response, NextFunction } from 'express';
 import errorHandler from './middlewares/errorHandler';
 import { STATUS_FAILED, STATUS_SUCCESS } from './constants/statusCodes';
 import path from 'path';
+import cron from 'node-cron';
+import CourseReminders from './models/courseReminder';
 
 // body parser
 app.use(express.json({ limit: '50mb' }));
@@ -69,6 +71,8 @@ import privateVideoRoutes from './routes/privateVideoRoutes';
 import authorRoutes from './routes/authorRoutes';
 import courseRoutes from './routes/courseRoutes';
 import videoRoutes from './routes/videoRoutes';
+import reminderRoutes from './routes/reminderRoutes';
+import { sendReminder } from './utils/sendReminder';
 
 app.use('/api/users', userRoutes);
 app.use('/api/product', productRouter);
@@ -79,6 +83,47 @@ app.use('/api/private-video', privateVideoRoutes);
 app.use('/api/author', authorRoutes);
 app.use('/api/course', courseRoutes);
 app.use('/api/video', videoRoutes);
+app.use('/api/reminder', reminderRoutes);
+
+// Schedule a cron job to run every minute
+// Study reminder
+cron.schedule('*/10 * * * * *', async () => {
+  const h = new Date(Date.now()).getHours();
+  const m = new Date(Date.now()).getMinutes();
+
+  const days = [
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+  ];
+  const dayOfWeek = days[new Date(Date.now()).getDay()];
+
+  const findReminder = await CourseReminders.find({
+    hours: h,
+    minutes: m,
+    days: { $in: [dayOfWeek] },
+  });
+
+  findReminder.map(async (reminder) => {
+    const isSameDate = (inputDate: any) => {
+      const today = new Date().toISOString().split('T')[0]; // Current date (YYYY-MM-DD)
+      const inputDateFormatted = new Date(inputDate)
+        .toISOString()
+        .split('T')[0]; // Input date formatted
+
+      return today === inputDateFormatted;
+    };
+    if (isSameDate(reminder.exp) === true) {
+      await CourseReminders.findOneAndDelete({ _id: reminder._id });
+    }
+    sendReminder(reminder.email, reminder.name, reminder.course_title);
+    console.log('Email sent');
+  });
+});
 
 // error handler
 app.use(errorHandler);

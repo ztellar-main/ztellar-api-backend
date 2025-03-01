@@ -103,6 +103,8 @@ export const getSingleAuthorEvent = tryCatch(
       .populate({ path: 'subjects._id', select: 'title link product_id' })
       .populate({ path: 'subjects.videos._id' });
 
+    console.log(event);
+
     res.status(200).json(event);
   }
 );
