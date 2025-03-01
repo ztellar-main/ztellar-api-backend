@@ -32,6 +32,8 @@ export const createReminder = tryCatch(
     const utcHours = localDate.getUTCHours();
     const utcMinutes = localDate.getUTCMinutes();
 
+    console.log({ utcHours, utcMinutes });
+
     const months = expiry.split(' ')[0];
 
     const now = new Date();
@@ -86,6 +88,8 @@ export const updateReminder = tryCatch(
     // Convert to UTC
     const utcHours = localDate.getUTCHours();
     const utcMinutes = localDate.getUTCMinutes();
+
+    console.log({ utcHours, utcMinutes });
 
     const months = expiry.split(' ')[0];
 
