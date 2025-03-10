@@ -291,6 +291,7 @@ const productSchema = new mongoose.Schema(
         url: String,
       },
     ],
+    event_type: String,
   },
   { timestamps: true }
 );

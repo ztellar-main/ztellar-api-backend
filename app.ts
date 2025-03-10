@@ -73,6 +73,7 @@ import courseRoutes from './routes/courseRoutes';
 import videoRoutes from './routes/videoRoutes';
 import reminderRoutes from './routes/reminderRoutes';
 import { sendReminder } from './utils/sendReminder';
+import eventContestRoutes from './routes/eventContestRoutes'
 
 app.use('/api/users', userRoutes);
 app.use('/api/product', productRouter);
@@ -84,6 +85,7 @@ app.use('/api/author', authorRoutes);
 app.use('/api/course', courseRoutes);
 app.use('/api/video', videoRoutes);
 app.use('/api/reminder', reminderRoutes);
+app.use('/api/event-contest', eventContestRoutes);
 
 // Schedule a cron job to run every minute
 // Study reminder

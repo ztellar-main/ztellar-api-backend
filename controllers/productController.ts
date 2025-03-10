@@ -671,6 +671,7 @@ import { sponsorReservationEmailEvent } from '../utils/sponsorReservationEmailEv
 import ZoomMeeting from '../models/ZoomMeeting';
 import axios from 'axios';
 import Payment from '../models/paymentModel';
+import EventContestModel from '../models/eventContestModel';
 export const saveBoot = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
     const newSponsor = await Product.findOneAndUpdate(
@@ -954,6 +955,11 @@ export const getEventDetailsAuthorDashboard = tryCatch(
     // EVENT TITLE
     const eventTitle = event.title;
 
+    const teams = await EventContestModel.find({
+      user: userId,
+      event: eventId,
+    });
+
     res.json({
       total: totalAuthorPayment,
       numberOfRegistered,
@@ -969,6 +975,7 @@ export const getEventDetailsAuthorDashboard = tryCatch(
       excel,
       sponsorsBooths,
       eventTitle,
+      contestTeams: teams,
     });
   }
 );
@@ -1282,5 +1289,52 @@ export const eventPayCash = tryCatch(
     }
 
     return res.status(200).json('success');
+  }
+);
+
+// user-exist
+export const findUserUsingEmail = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      throw new AppError(
+        'User does not exist, please enter a registered email',
+        'User does not exist, please enter a registered email',
+        400
+      );
+    }
+
+    res.json(user);
+  }
+);
+
+// get all contest event
+export const getAllContestEvent = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const events = await Product.find({ event_type: 'contest' }).select(
+      'title _id'
+    );
+
+    res.json(events);
+  }
+);
+
+// add team to contest
+export const addTeamToContest = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const userId = req.user;
+    const data = req.body;
+
+    console.log(data);
+
+    const newEventTeam = await EventContestModel.create({
+      user: userId,
+      ...data,
+    });
+
+    res.json(newEventTeam);
   }
 );

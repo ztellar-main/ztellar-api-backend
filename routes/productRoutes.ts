@@ -37,6 +37,9 @@ import {
   getZoomJoinUrl,
   getEventDataForCashLane,
   eventPayCash,
+  findUserUsingEmail,
+  getAllContestEvent,
+  addTeamToContest
 } from '../controllers/productController';
 
 import { protect } from '../utils/protect';
@@ -110,5 +113,11 @@ router.get('/get-event-data-for-cash-lane', protect, getEventDataForCashLane);
 
 // create event cash payment
 router.put('/create-event-cash', protect, eventPayCash);
+
+// create team contest
+// check if user exist
+router.post('/find-user-email', protect, findUserUsingEmail);
+router.get('/get-all-contest-event', protect, getAllContestEvent);
+router.post('/save-team-for-contest-event', protect, addTeamToContest);
 
 export default router;
