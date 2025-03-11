@@ -901,8 +901,6 @@ export const paymongoWebhookForCourse = tryCatch(
 
     const description = event?.data?.attributes?.data?.attributes?.description;
 
-    console.log(description);
-
     const productType = description.split('/')[0];
 
     if (!event || !event.data || !event.data.attributes) {
@@ -910,6 +908,8 @@ export const paymongoWebhookForCourse = tryCatch(
     }
 
     const eventType = event.data.attributes.type;
+
+    console.log(eventType);
 
     switch (eventType) {
       case 'payment.paid':
@@ -978,6 +978,20 @@ export const paymongoWebhookForCourse = tryCatch(
             );
           }
 
+          if (productOwned) {
+            await User.findOneAndUpdate(
+              {
+                _id: userId,
+              },
+              {
+                $set: {
+                  'product_owned.$[e1].expiry': expiryDate,
+                },
+              },
+              { arrayFilters: [{ 'e1._id': courseId }] }
+            );
+          }
+
           // UDPATE COURSE
           const event = await Product.findOne({ _id: courseId });
           const courseFilter = event.registered.find((data) => {
@@ -1009,18 +1023,6 @@ export const paymongoWebhookForCourse = tryCatch(
                 upsert: false,
               }
             );
-
-            // UPDATE AUTHOR BALANCE
-            await User.findOneAndUpdate(
-              { _id: authorId },
-              {
-                $inc: { author_event_balance: authorFee },
-              },
-              {
-                new: true,
-                upsert: false,
-              }
-            );
           }
 
           // CREATE PAYMENT RECORD
@@ -1032,22 +1034,34 @@ export const paymongoWebhookForCourse = tryCatch(
             author_id: authorId,
           });
 
-          if (paymentRecord) {
-            console.log('exist');
-          } else {
-            console.log('not exist');
-            // create payment record
-            await Payment.create({
-              author_id: authorId,
-              product_type: 'course',
-              buyer_id: userId,
-              payment_mode: paymentMethod,
-              payment_source: 'paymongo',
-              author_payment: authorFee,
-              ztellar_fee: ztellarFee,
-              product_id: courseId,
-            });
-          }
+          // if (paymentRecord) {
+          //   console.log('exist');
+          // } else {
+          //   console.log('not exist');
+          // create payment record
+          await Payment.create({
+            author_id: authorId,
+            product_type: 'course',
+            buyer_id: userId,
+            payment_mode: paymentMethod,
+            payment_source: 'paymongo',
+            author_payment: authorFee,
+            ztellar_fee: ztellarFee,
+            product_id: courseId,
+          });
+          // }
+
+          // UPDATE AUTHOR BALANCE
+          await User.findOneAndUpdate(
+            { _id: authorId },
+            {
+              $inc: { author_event_balance: authorFee },
+            },
+            {
+              new: true,
+              upsert: false,
+            }
+          );
 
           return res.status(200).json('success');
         }
