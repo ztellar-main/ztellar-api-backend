@@ -446,7 +446,7 @@ export const getCoursePublic = tryCatch(
 
     const course = await Product.findOne({ _id: id })
       .select(
-        'converted_video_intro title description course_price average_rating feedback feedback_count course_subjects author_id registered'
+        'converted_video_intro title description course_price average_rating feedback feedback_count course_subjects author_id registered video_url'
       )
       .populate({ path: 'course_subjects.data', select: 'title' })
       .populate({ path: 'course_subjects.videos.data', select: 'title' })
