@@ -8,6 +8,7 @@ import Product from '../models/productModel';
 import User from '../models/userModel';
 import Payment from '../models/paymentModel';
 import Pidcid from '../models/PidCid';
+import MovieSubscription from '../models/movieSubscription';
 export interface IGetUserAuthInfoRequest extends Request {
   user: any; // or any other type
 }
@@ -895,6 +896,75 @@ export const attachPaymentIntentForCourse = tryCatch(
   }
 );
 
+// MOVIE
+// create payment intent for course
+export const createPaymentIntentForMovie = tryCatch(
+  async (req: IGetUserAuthInfoRequest, res: Response) => {
+    const userId = req.user;
+
+    const { amount, courseId, authorId, hours, paymentMethod, baseAmount } =
+      req.body;
+
+    const descrip = {
+      type: 'movie',
+      courseId,
+      authorId,
+      hours,
+      amount,
+      baseAmount,
+      paymentMethod,
+      userId,
+    };
+
+    const finalDescription = JSON.stringify(descrip);
+
+    console.log(JSON.parse(finalDescription));
+
+    const finalAmount = Math.ceil(amount);
+
+    const toPay = Number(`${finalAmount}00`);
+
+    const options = {
+      method: 'POST',
+      url: 'https://api.paymongo.com/v1/payment_intents',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        authorization: `Basic ${process.env.COURSE_PAYMONGO_KEY}`,
+      },
+      data: {
+        data: {
+          attributes: {
+            amount: toPay,
+            payment_method_allowed: [
+              'qrph',
+              'card',
+              'dob',
+              'paymaya',
+              'billease',
+              'gcash',
+              'grab_pay',
+            ],
+            payment_method_options: { card: { request_three_d_secure: 'any' } },
+            currency: 'PHP',
+            capture_type: 'automatic',
+            description: finalDescription,
+          },
+        },
+      },
+    };
+
+    axios
+      .request(options)
+      .then(function (response) {
+        res.status(200).json(response.data);
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
+  }
+);
+
 export const paymongoWebhookForCourse = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
     const event = req.body;
@@ -902,6 +972,8 @@ export const paymongoWebhookForCourse = tryCatch(
     const description = event?.data?.attributes?.data?.attributes?.description;
 
     const productType = description.split('/')[0];
+
+    const data = JSON.parse(description);
 
     if (!event || !event.data || !event.data.attributes) {
       return res.status(400).send('Invalid Webhook Data');
@@ -1062,6 +1134,108 @@ export const paymongoWebhookForCourse = tryCatch(
               upsert: false,
             }
           );
+
+          return res.status(200).json('success');
+        }
+
+        // MOVIE
+        if (data.type === 'movie') {
+          let ztellarFee;
+
+          if (data?.paymentMethod === 'gcash') {
+            const rate = 0.022;
+            const a = Number(data?.amount) * rate;
+            const b = Number(data?.amount) - a;
+            const zFee = data?.baseAmount - b;
+
+            ztellarFee = zFee;
+          }
+
+          if (data?.paymentMethod === 'paymaya') {
+            const rate = 0.019;
+            const a = Number(data?.amount) * rate;
+            const b = Number(data?.amount) - a;
+            const zFee = data?.baseAmount - b;
+
+            ztellarFee = zFee;
+          }
+
+          const now = Date.now(); // Current timestamp in milliseconds
+          const expiryTime = now + Number(data.hours) * 60 * 60 * 1000;
+
+          // add subscription
+          await MovieSubscription.create({
+            user_id: data.userId,
+            product_id: data?.courseId,
+            expiry: expiryTime,
+          });
+
+          // add or edit registered
+          const product = await Product.findOne({ _id: data.courseId });
+
+          const findUserInRegistered = product.subscribers.find(
+            (datsubscriberData) => {
+              const a = datsubscriberData.user_id.toString();
+              return a === data.userId;
+            }
+          );
+
+          if (!findUserInRegistered) {
+            await Product.findOneAndUpdate(
+              {
+                _id: data.courseId,
+              },
+              {
+                $push: {
+                  subscribers: {
+                    user_id: data.userId,
+                    amount: data.baseAmount,
+                  },
+                },
+              }
+            );
+          } else {
+            await Product.findOneAndUpdate(
+              {
+                _id: data.courseId,
+              },
+              {
+                $inc: {
+                  'subscribers.$[e1].count': 1,
+                  'subscribers.$[e1].amount': data.baseAmount,
+                },
+              },
+              {
+                arrayFilters: [{ 'e1._id': findUserInRegistered._id }],
+                new: true,
+              }
+            );
+          }
+
+          // update author balance
+          await User.findOneAndUpdate(
+            { _id: data.authorId },
+            {
+              $inc: { author_event_balance: data.baseAmount },
+            },
+            {
+              new: true,
+              upsert: false,
+            }
+          );
+
+          // create payment
+          const asd = await Payment.create({
+            author_id: data.authorId,
+            product_type: 'movie',
+            buyer_id: data.userId,
+            payment_mode: data.paymentMethod,
+            payment_source: 'paymongo',
+            author_payment: data.baseMount,
+            ztellar_fee: ztellarFee,
+            product_id: data.courseId,
+          });
+          console.log(asd);
 
           return res.status(200).json('success');
         }

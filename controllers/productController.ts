@@ -17,6 +17,7 @@ import {
 import Video from '../models/videoModel';
 import User from '../models/userModel';
 import { Document } from 'mongoose';
+import jwt from 'jsonwebtoken';
 
 export interface IGetUserAuthInfoRequest extends Request {
   user: any; // or any other type
@@ -255,7 +256,14 @@ export const getOwnedProducts = tryCatch(
       populate: { path: 'feedback' },
     });
 
-    res.status(200).json(products);
+    const movies = await MovieSubscription.find({ user_id: userId }).populate({
+      path: 'product_id',
+      select: 'title image_url',
+    });
+
+    console.log(movies);
+
+    res.status(200).json({ products, movies });
   }
 );
 
@@ -264,10 +272,31 @@ export const getViewEventData = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
     const eventId = req.query.id;
 
-    const validate = isValidObjectId(eventId);
+    const token = req.headers.authorization;
 
-    if (!validate) {
-      throw new AppError(SOMETHING_WENT_WRONG, 'Invalid id.', 400);
+    let userID;
+
+    let auth = false;
+
+    if (token) {
+      try {
+        const decoded: any = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(decoded.id).select('-password');
+
+        const userId = user._id;
+
+        userID = userId;
+
+        const validate = isValidObjectId(eventId);
+
+        auth = true;
+
+        if (!validate) {
+          throw new AppError(SOMETHING_WENT_WRONG, 'Invalid id.', 400);
+        }
+      } catch (err) {
+        auth = false;
+      }
     }
 
     const event = await Product.findOne({ _id: eventId })
@@ -289,7 +318,12 @@ export const getViewEventData = tryCatch(
       throw new AppError(SOMETHING_WENT_WRONG, 'Event does not exist.', 400);
     }
 
-    res.json(event);
+    const eventContest = await EventContestModel.findOne({
+      user: userID,
+      event: eventId,
+    });
+
+    res.json({ event, auth, eventContest });
   }
 );
 
@@ -672,6 +706,9 @@ import ZoomMeeting from '../models/ZoomMeeting';
 import axios from 'axios';
 import Payment from '../models/paymentModel';
 import EventContestModel from '../models/eventContestModel';
+import { contestTeamMateAdded } from '../utils/emails/contestAddedTeamMatesEmail';
+import { contestCreateTeam } from '../utils/emails/contestCreateTeamEmail';
+import MovieSubscription from '../models/movieSubscription';
 export const saveBoot = tryCatch(
   async (req: IGetUserAuthInfoRequest, res: Response) => {
     const newSponsor = await Product.findOneAndUpdate(
@@ -1328,11 +1365,26 @@ export const addTeamToContest = tryCatch(
     const userId = req.user;
     const data = req.body;
 
-    console.log(data);
+    // user
+    const user = await User.findOne({ _id: userId });
+
+    // event
+    const event = await Product.findOne({ _id: data.event });
 
     const newEventTeam = await EventContestModel.create({
       user: userId,
       ...data,
+    });
+
+    contestCreateTeam(user.email, data.team_name, event.title, data.team_mates);
+
+    data.team_mates.map((teamMate) => {
+      contestTeamMateAdded(
+        teamMate.email,
+        data.team_name,
+        event.title,
+        teamMate.role
+      );
     });
 
     res.json(newEventTeam);

@@ -18,6 +18,7 @@ import {
   createPaymentMethodForcourse,
   attachPaymentIntentForCourse,
   paymongoWebhookForCourse,
+  createPaymentIntentForMovie
 } from '../controllers/paymongoController';
 
 import { protect } from '../utils/protect';
@@ -81,5 +82,13 @@ router.post(
 );
 
 router.post('/course-webhook', paymongoWebhookForCourse);
+
+// FOR MOVIE
+router.post(
+  '/create-payment-intent-for-movie',
+  protect,
+  createPaymentIntentForMovie
+);
+
 
 export default router;

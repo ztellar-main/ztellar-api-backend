@@ -73,7 +73,10 @@ import courseRoutes from './routes/courseRoutes';
 import videoRoutes from './routes/videoRoutes';
 import reminderRoutes from './routes/reminderRoutes';
 import { sendReminder } from './utils/sendReminder';
-import eventContestRoutes from './routes/eventContestRoutes'
+import eventContestRoutes from './routes/eventContestRoutes';
+import movieRoutes from './routes/movieRoutes';
+import MovieSubscription from './models/movieSubscription';
+import { movieSubscriptionExpiredEmail } from './utils/emails/movieSubscriptionExpiredEmail';
 
 app.use('/api/users', userRoutes);
 app.use('/api/product', productRouter);
@@ -86,6 +89,7 @@ app.use('/api/course', courseRoutes);
 app.use('/api/video', videoRoutes);
 app.use('/api/reminder', reminderRoutes);
 app.use('/api/event-contest', eventContestRoutes);
+app.use('/api/movie', movieRoutes);
 
 // Schedule a cron job to run every minute
 // Study reminder
@@ -127,6 +131,37 @@ cron.schedule('* * * * *', async () => {
     sendReminder(reminder.email, reminder.name, reminder.course_title);
     console.log('Email sent');
   });
+
+  const movieExpired = async () => {
+    const now = new Date();
+
+    // Find expired subscriptions
+    const expiredSubscriptions = await MovieSubscription.find({
+      expiry: { $lt: now },
+    })
+      .populate({ path: 'product_id', select: 'title' })
+      .populate({ path: 'user_id', select: 'fname email' });
+
+    if (expiredSubscriptions.length === 0) {
+      console.log('No expired subscriptions found.');
+      return;
+    }
+
+    expiredSubscriptions.map((expired: any) => {
+      return movieSubscriptionExpiredEmail(
+        expired?.user_id.fname,
+        expired?.product_id.title,
+        expired?.user_id.email
+      );
+    });
+
+    // Delete expired subscriptions
+    await MovieSubscription.deleteMany({
+      expiry: { $lt: now },
+    });
+  };
+
+  await movieExpired();
 });
 
 // error handler

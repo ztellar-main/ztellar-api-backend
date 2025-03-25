@@ -20,7 +20,9 @@ const eventContestSchema = new mongoose.Schema({
         type: mongoose.Types.ObjectId,
         ref: 'User',
       },
+
       role: { type: String, require: true },
+      email: String,
     },
   ],
   event: { type: mongoose.Types.ObjectId, ref: 'Product' },

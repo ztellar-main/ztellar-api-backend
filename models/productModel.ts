@@ -70,6 +70,7 @@ const productSchema = new mongoose.Schema(
           type: Date,
           default: Date.now(),
         },
+
       },
     ],
     feedback: [
@@ -292,6 +293,27 @@ const productSchema = new mongoose.Schema(
       },
     ],
     event_type: String,
+    // MOVIE
+    movie_prices: [
+      {
+        hours: Number,
+        price: Number,
+        description: String,
+      },
+    ],
+    subscribers: [
+      {
+        user_id: {
+          type: mongoose.Types.ObjectId,
+          ref: 'User',
+        },
+        count: {
+          type: Number,
+          default: 1,
+        },
+        amount: Number,
+      },
+    ],
   },
   { timestamps: true }
 );
